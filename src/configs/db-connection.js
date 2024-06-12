@@ -14,7 +14,7 @@ const mongoUri = `mongodb://${CL_MONGODB_USERNAME}:${CL_MONGODB_PASSWORD}@${CL_M
 set('strictQuery', false);
 set('bufferCommands', true);
 set('bufferTimeoutMS', 20000); // Set to 20000 milliseconds (20 second)
-connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+connect(mongoUri);
 connection.once('open', () => {
     console.log("Database Connection Established Successfully......");
 }).on('error', (err) => {
