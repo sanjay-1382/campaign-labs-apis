@@ -1,7 +1,7 @@
 import { responseCode } from './error-code';
 
 const createResponse = (code, severity, defaultMessage, data = {}) => ({
-    product: { "name": "DataLabs", "version": "v1.0" },
+    product: { "name": "CamapignLabs", "version": "v1.0" },
     status: { "code": code, "severity": severity, "value": data.message || defaultMessage },
     data: data.data && Object.keys(data.data).length ? data.data : null,
     error: !(data.data && Object.keys(data.data).length),

@@ -2,15 +2,15 @@ import { Router } from 'express';
 const router = Router();
 
 // Import routes
-import dashboard from './main/dashboard';
+import adminConsole from './admin-console/domain-account';
 
 router.get('/', (req, res, next) => {
-    res.render('index', { title: 'DataLabs' });
+    res.render('index', { title: 'CampaignLabs' });
 });
 
 // Use an array for routes
 const routes = [
-    dashboard
+    adminConsole
 ];
 
 // Use forEach to apply routes

@@ -23,7 +23,7 @@ export const feedStop = (data, subject, component, cb) => {
     const mailOptions = {
         from: CL_NODE_MAILER_USERNAME, to: toEmail, /*cc: ccEmail,*/ bcc: bccEmail, subject: subject,
         html: `<p>Dear Team,</p>
-                <p>We have encountered an issue in our application, [<b>DataLabs</b>], and I wanted to provide you with a brief overview of the error details for your reference.</p>
+                <p>We have encountered an issue in our application, [<b>CampaignLabs</b>], and I wanted to provide you with a brief overview of the error details for your reference.</p>
                 <p><b>Error Details:</b></p>
                 <div style="width:1200px; font-family:sans-serif;">
                     <table border="1" width="1000" class="table" style="border:1px solid #000000; width:100%; margin-bottom:1rem; color:#212b36; border-collapse:collapse;">
@@ -42,9 +42,9 @@ export const feedStop = (data, subject, component, cb) => {
                 </div>
                 <p>Please feel free to reach out if you need more information or have any questions regarding this error.</p>
                 <p>Thank you for your attention to this matter, and we apologize for any inconvenience this may have caused.</p>
-                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact Datalabs Team.</p>
+                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact CampaignLabs Team.</p>
                 <p><b>Thanks</b>,</p>
-                <p>Datalabs Admin</p>`
+                <p>CampaignLabs Admin</p>`
     };
     transport.sendMail(mailOptions, (err, info) => { if (err) { cb(err, null); } else { cb(null, info); } });
 }
@@ -63,7 +63,7 @@ export const sendErrorLogs = (data, subject, component, cb) => {
     const mailOptions = {
         from: CL_NODE_MAILER_USERNAME, to: toEmail, /*cc: ccEmail,*/ bcc: bccEmail, subject: subject,
         html: `<p>Dear Team,</p>
-                <p>We have encountered an issue in our application, [<b>DataLabs</b>], and I wanted to provide you with a brief overview of the error details for your reference.</p>
+                <p>We have encountered an issue in our application, [<b>CampaignLabs</b>], and I wanted to provide you with a brief overview of the error details for your reference.</p>
                 <p><b>Error Details:</b></p>
                 <div style="width:1200px; font-family:sans-serif;">
                     <table border="1" width="1000" class="table" style="border:1px solid #000000; width:100%; margin-bottom:1rem; color:#212b36; border-collapse:collapse;">
@@ -84,9 +84,9 @@ export const sendErrorLogs = (data, subject, component, cb) => {
                 </div>
                 <p>Please feel free to reach out if you need more information or have any questions regarding this error.</p>
                 <p>Thank you for your attention to this matter, and we apologize for any inconvenience this may have caused.</p>
-                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact Datalabs Team.</p>
+                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact CampaignLabs Team.</p>
                 <p><b>Thanks</b>,</p>
-                <p>Datalabs Admin</p>`
+                <p>CampaignLabs Admin</p>`
     };
     transport.sendMail(mailOptions, (err, info) => { if (err) { cb(err, null); } else { cb(null, info); } });
 }
@@ -128,9 +128,9 @@ export const countDifferences = (data, subject, component, cb) => {
                 </div>
                 <p>Please feel free to reach out if you need more information or have any questions regarding this error.</p>
                 <p>Thank you for your attention to this matter, and we apologize for any inconvenience this may have caused.</p>
-                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact Datalabs Team.</p>
+                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact CampaignLabs Team.</p>
                 <p><b>Thanks</b>,</p>
-                <p>Datalabs Admin</p>`
+                <p>CampaignLabs Admin</p>`
     };
     transport.sendMail(mailOptions, (err, info) => { if (err) { cb(err, null); } else { cb(null, info); } });
 }
@@ -167,9 +167,9 @@ export const dailyRecordCheck = (data, subject, component, duration, cb) => {
                 </div>
                 <p>Please feel free to reach out if you need more information or have any questions regarding this error.</p>
                 <p>Thank you for your attention to this matter, and we apologize for any inconvenience this may have caused.</p>
-                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact Datalabs Team.</p>
+                <p><b>NOTE:</b> This is an automatically generated mail – please do not reply to it. If you have any queries regarding the same, kindly contact CampaignLabs Team.</p>
                 <p><b>Thanks</b>,</p>
-                <p>Datalabs Admin</p>`
+                <p>CampaignLabs Admin</p>`
     };
     transport.sendMail(mailOptions, (err, info) => { if (err) { cb(err, null); } else { cb(null, info); } });
 }
