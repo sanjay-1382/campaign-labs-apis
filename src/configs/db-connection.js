@@ -11,10 +11,12 @@ const { CL_MONGODB_ADMIN, CL_MONGODB_HOST, CL_MONGODB_PORT, CL_MONGODB_USERNAME,
 // const mongoUri = `mongodb://${CL_MONGODB_HOST}:${CL_MONGODB_PORT}/${CL_MONGODB_SCHEME}?authMechanism=DEFAULT&authSource=${CL_MONGODB_ADMIN}`;
 const mongoUri = `mongodb://${CL_MONGODB_USERNAME}:${CL_MONGODB_PASSWORD}@${CL_MONGODB_HOST}:${CL_MONGODB_PORT}/${CL_MONGODB_SCHEME}?authMechanism=DEFAULT&authSource=${CL_MONGODB_ADMIN}`;
 
+const mongoUridemoManish = 'mongodb://localhost:27017/cl-demo'
+
 set('strictQuery', false);
 set('bufferCommands', true);
 set('bufferTimeoutMS', 20000); // Set to 20000 milliseconds (20 second)
-connect(mongoUri);
+connect(mongoUridemoManish);
 connection.once('open', () => {
     console.log("Database Connection Established Successfully......");
 }).on('error', (err) => {
