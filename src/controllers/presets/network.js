@@ -23,10 +23,7 @@ export const addNetworkDetails = async (req, res) => {
         }
 
         try {
-            const newData = new Network(networkDetails);
-
-            await newData.save();
-
+            const newData = await Network(networkDetails);
             res.json({ status: "success", message: "Data inserted", newData });
         } catch (error) {
             console.error("Error inserting data: ", error);
@@ -40,10 +37,7 @@ export const addNetworkDetails = async (req, res) => {
     }
 }
 
-
-
 export const getAllNetworkDetails = async () => {
-
     try {
         const networkData = await Network.find();
         res.status(200).json({ status: "success", data: networkData })
@@ -53,23 +47,14 @@ export const getAllNetworkDetails = async () => {
     }
 }
 
-
-
 export const getAllNetworkNames = () => {
 
 }
-
-
-
 
 export const updateNetworkDetails = () => {
 
 }
 
-
-
-
 export const updateNetworkActiveStatus = () => {
 
 }
-
