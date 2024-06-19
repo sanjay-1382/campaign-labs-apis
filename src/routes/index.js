@@ -3,8 +3,9 @@ const router = Router();
 
 // Import routes
 import adminConsole from './admin-console/domain-account';
-
 import network from './presets/network';
+import offers from './presets/offer';
+
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
@@ -15,7 +16,8 @@ router.get('/', (req, res, next) => {
 
 const routes = [
     adminConsole,
-    network
+    network,
+    offers
 ];
 
 // Use forEach to apply routes
