@@ -4,15 +4,13 @@ const routes = Router();
 import {
     addNetworkDetails,
     getAllNetworkDetails,
-    getAllNetworkNames,
-    updateNetworkActiveStatus,
     updateNetworkDetails
 } from '../../controllers/presets/network'
 
-routes.post("/network/addNetworkDetails/", addNetworkDetails);
-routes.get("/network/getAllNetworkDetails/", getAllNetworkDetails)
-routes.get("/network/getAllNetworkNames/", getAllNetworkNames)
-routes.put("/network/updateNetworkDetails/:id", updateNetworkDetails)
-routes.put("/network/updateNetworkActiveStatus/:id", updateNetworkActiveStatus)
+routes.post("/preset/network/create", addNetworkDetails);
+routes.get("/preset/network/details", getAllNetworkDetails);
+routes.put("/preset/network/edit/:id", updateNetworkDetails);
+routes.put("/preset/network/active-inactive/:id", updateNetworkDetails);
+routes.delete("/preset/network/delete/:id", updateNetworkDetails);
 
 export default routes;
