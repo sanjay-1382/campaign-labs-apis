@@ -23,11 +23,11 @@ export const addNetworkDetails = async (req, res) => {
         }
 
         try {
-            const newData = new Network( networkDetails );
-            
+            const newData = new Network(networkDetails);
+
             await newData.save();
 
-            res.json({ status: "success", message: "Data inserted" , newData });
+            res.json({ status: "success", message: "Data inserted", newData });
         } catch (error) {
             console.error("Error inserting data: ", error);
             return res.status(500).json({ status: "failed", message: "Error inserting data: " })
