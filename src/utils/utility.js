@@ -81,12 +81,12 @@ export const formatDate = (dateString) => moment(dateString).format("DD-MMM-YYYY
 
 export function splitString(string) { return string.split("x")[1]; }
 
-export function randomString(length = 8) {
-    const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let result = "";
-    for (let i = 0; i < length; i++) { result += chars[Math.floor(Math.random() * chars.length)]; }
-    return result;
-}
+// export function randomString(length = 8) {
+//     const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//     let result = "";
+//     for (let i = 0; i < length; i++) { result += chars[Math.floor(Math.random() * chars.length)]; }
+//     return result;
+// }
 
 export function isEmailValid(email) {
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -125,26 +125,26 @@ export const getNewDateFromDays = (days) => {
 /********************************************************************************/
 
 // Utility function to format date
-function formatDate(date, format = "Y-m-d H:i:s") {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
+// function formatDate(date, format = "Y-m-d H:i:s") {
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, "0");
+//     const day = String(date.getDate()).padStart(2, "0");
+//     const hours = String(date.getHours()).padStart(2, "0");
+//     const minutes = String(date.getMinutes()).padStart(2, "0");
+//     const seconds = String(date.getSeconds()).padStart(2, "0");
 
-    if (format === "Y-m-d H:i:s") {
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    } else if (format === "Y-m-d 00:00:00") {
-        return `${year}-${month}-${day} 00:00:00`;
-    } else if (format === "Y-m-d 23:59:59") {
-        return `${year}-${month}-${day} 23:59:59`;
-    } else if (format === "Y-m-d") {
-        return `${year}-${month}-${day}`;
-    } else if (format === "Y-m-d-H:i:s") {
-        return `${year}-${month}-${day}-${hours}:${minutes}:${seconds}`;
-    }
-}
+//     if (format === "Y-m-d H:i:s") {
+//         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+//     } else if (format === "Y-m-d 00:00:00") {
+//         return `${year}-${month}-${day} 00:00:00`;
+//     } else if (format === "Y-m-d 23:59:59") {
+//         return `${year}-${month}-${day} 23:59:59`;
+//     } else if (format === "Y-m-d") {
+//         return `${year}-${month}-${day}`;
+//     } else if (format === "Y-m-d-H:i:s") {
+//         return `${year}-${month}-${day}-${hours}:${minutes}:${seconds}`;
+//     }
+// }
 
 // Exported functions
 export function DiffDateToYMDHIS(diffDay = 1) {

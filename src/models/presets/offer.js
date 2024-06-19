@@ -11,6 +11,10 @@ offerGroupName: {
     default: null
 },
 offerLink: String,
+partnerId: {
+type: String,
+default: null
+},
 personalUnsub: {
     type: String,
     default: null
