@@ -1,7 +1,9 @@
 import { Router } from 'express';
 const router = Router();
 import {
-    addOfferDetails
+    addOfferDetails,
+    getAllOffers,
+    getOfferById
 } from '../../controllers/presets/offer';
 
 // Error handling middleware
@@ -11,6 +13,9 @@ router.use((err, req, res, next) => {
 });
 
 router.route('/preset/offer/create').post(addOfferDetails);
+router.route('/preset/offer/details').get(getAllOffers);
+router.route('/preset/offer/find-one/:id').get(getOfferById);
+
 // router.route('/preset/offer/find-one').post(getDatabaseDetails);
 // router.route('/preset/offer/details').post(findAllDatabaseDetails);
 // router.route('/preset/offer/list-items').post(databaseDetailsList);
