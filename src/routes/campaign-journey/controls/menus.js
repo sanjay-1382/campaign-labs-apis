@@ -3,7 +3,7 @@ const router = Router();
 import { addMenuDetails, findAllMenuDetails } from '../../../controllers/campaign-journey/controls/menus';
 
 // Error handling middleware
-router.use((err, req, res, next) => {
+router.use((err, req, res) => {
     console.error(err.stack);
     res.internalServerError({ message: 'Something went wrong! Please try again.' });
 });
