@@ -1,8 +1,6 @@
 import { Schema, model } from "mongoose";
 
 const network = new Schema({
-
-
     portalName: { type: String, default: null },
     prtalId: { type: String, default: null },
     affiliatesId: { type: String, default: null },

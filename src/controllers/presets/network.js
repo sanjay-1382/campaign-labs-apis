@@ -7,6 +7,7 @@ export const addNetworkDetails = async (req, res) => {
     try {
         try {
             const result = await create(NetworkDetails, dataToCreate);
+
             res.success({ data: result })
         } catch (error) {
             console.error("Error inserting data: ", error);
@@ -18,10 +19,25 @@ export const addNetworkDetails = async (req, res) => {
 }
 
 export const getAllNetworkDetails = async (req, res) => {
-    const val = false;
+    const id = { isDeleted: false };
     try {
-        const networkData = await findMany(NetworkDetails, { isDeleted: val }, {}, { sort: { createdAt: -1 } });
-        res.success({ data: networkData })
+        const data = await findMany(NetworkDetails, id, {}, { sort: { createdAt: -1 } });
+
+        const headers = [
+            { headerName: "Portal Name", field: "portalName", filter: true, pinned: 'left', width: 400 },
+            { headerName: "Prtal Id", field: "prtalId", filter: true },
+            { headerName: "Affiliates Id", field: "affiliatesId", filter: true },
+            { headerName: "Affiliates Name", field: "affiliatesName", filter: true },
+            { headerName: "Advertiser Id", field: "advertiserId", filter: true },
+            { headerName: "Advertiser Name", field: "advertiserName", filter: true },
+            { headerName: "Created Id", field: "createdId", filter: true },
+            { headerName: "Created By", field: "createdBy", filter: true },
+            { headerName: "Is Deleted", field: "isDeleted", filter: true },
+            { headerName: "Is Active", field: "isActive", filter: true },
+            { headerName: "Created At", field: "createdAt", filter: true },
+            { headerName: "Updated At", field: "updatedAt", filter: true },
+        ];
+        res.success({ data: { headers, data } })
     } catch (error) {
         console.log(error);
         return res.internalServerError();
