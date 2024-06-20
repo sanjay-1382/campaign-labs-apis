@@ -20,7 +20,7 @@ export const findOne = (model, filter, options = {}) => {
 }
 
 // Find multiple documents
-export const findMany = (model, filter, options = {}, sortValue = {}) => {
+export const findMany = (model, filter = {}, options = {}, sortValue = {}) => {
     return model.find(filter, options, sortValue)
         .then(result => { return result; })
         .catch(error => { throw error; });
