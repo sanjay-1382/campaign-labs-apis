@@ -7,6 +7,7 @@ import menus from './campaign-journey/controls/menus';
 import network from './presets/network';
 import offers from './presets/offer';
 import headers from './presets/header';
+import footer from './presets/footer'
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
@@ -17,7 +18,8 @@ const routes = [
     menus,
     network,
     offers,
-    headers
+    headers,
+    footer
 ];
 
 // Use forEach to apply routes
