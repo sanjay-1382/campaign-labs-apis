@@ -1,4 +1,3 @@
-import { func } from "joi";
 import OfferDetails from "../../models/presets/offer";
 import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition";
 
