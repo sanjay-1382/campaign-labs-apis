@@ -7,6 +7,7 @@ router.use((err, req, res,next) => {
     console.error(err.stack);
     // res.internalServerError({ message: 'Something went wrong! Please try again.' });
     res.status(500).send("Something went wrong! Please try again.");
+    next();
 });
 
 router.route('/campaign-journey/control-menus/create').post(addMenuDetails);

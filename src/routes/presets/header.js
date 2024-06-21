@@ -1,5 +1,5 @@
 import { Router } from "express";
-const routes = Router();
+const router = Router();
 
 import {
     addHeaderkDetails,
@@ -8,10 +8,17 @@ import {
     activeInactiveHeaders
 } from "../../controllers/presets/header";
 
-routes.route("/preset/header/create").post(addHeaderkDetails);
-routes.route("/preset/header/details").get(getAllHeaderkDetails);
-routes.route("/preset/header/edit/:id").put(updateHeaderkDetails);
-routes.route("/preset/header/active-inactive/:id").put(activeInactiveHeaders);
-routes.route("/preset/header/delete/:id").delete(activeInactiveHeaders);
+// Error handling middleware
+router.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.internalServerError({ message: 'Something went wrong! Please try again.' });
+    next();
+});
 
-export default routes;
+router.route("/preset/header/create").post(addHeaderkDetails);
+router.route("/preset/header/details").get(getAllHeaderkDetails);
+router.route("/preset/header/edit/:id").put(updateHeaderkDetails);
+router.route("/preset/header/active-inactive/:id").put(activeInactiveHeaders);
+router.route("/preset/header/delete/:id").delete(activeInactiveHeaders);
+
+export default router;

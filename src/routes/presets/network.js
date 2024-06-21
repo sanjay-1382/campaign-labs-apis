@@ -1,5 +1,5 @@
-import { Router } from "express"
-const routes = Router();
+import { Router } from 'express';
+const router = Router();
 
 import {
     addNetworkDetails,
@@ -8,10 +8,17 @@ import {
     activeInactiveHeaders,
 } from '../../controllers/presets/network'
 
-routes.route("/preset/network/create").post(addNetworkDetails);
-routes.route("/preset/network/details").get(getAllNetworkDetails);
-routes.route("/preset/network/edit/:id").put(updateNetworkDetails);
-routes.route("/preset/network/active-inactive/:id").put(activeInactiveHeaders);
-routes.route("/preset/network/delete/:id").delete(activeInactiveHeaders);
+// Error handling middleware
+router.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.internalServerError({ message: 'Something went wrong! Please try again.' });
+    next();
+});
 
-export default routes;
+router.route('/preset/network/create').post(addNetworkDetails);
+router.route('/preset/network/details').get(getAllNetworkDetails);
+router.route('/preset/network/update/:id').put(updateNetworkDetails);
+router.route('/preset/network/active-inactive/:id').put(updateNetworkDetails);
+router.route('/preset/network/delete/:id').delete(updateNetworkDetails);
+
+export default router;
