@@ -4,7 +4,6 @@ import { addMenuDetails, findAllMenuDetails } from '../../../controllers/campaig
 
 // Error handling middleware
 router.use((err, req, res) => {
-    console.error(err.stack);
     res.internalServerError({ message: 'Something went wrong! Please try again.' });
 });
 
