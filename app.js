@@ -20,8 +20,8 @@ app.use(_static(join(__dirname, 'public')));
 app.use(errorHandler);
 
 // View engine setup
-app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/', indexRouter);
@@ -33,10 +33,11 @@ app.use((req, res, next) => {
 
 // Error handler
 app.use((err, req, res, next) => {
+    console.error(err.stack);
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     res.status(err.status || 500);
-    res.render('error');
+    res.render('error', { message: err.message, error: err });
 });
 
 export default app;

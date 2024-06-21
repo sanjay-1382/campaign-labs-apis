@@ -7,6 +7,7 @@ import {
 // Error handling middleware
 router.use((err, req, res, next) => {
     res.internalServerError({ message: 'Something went wrong! Please try again.' });
+    next();
 });
 
 router.route('/preset/offer/create').post(addOfferDetails);
