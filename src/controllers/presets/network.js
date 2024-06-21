@@ -1,13 +1,12 @@
 
 import NetworkDetails from '../../models/presets/network';
-import { create, updateOne, findMany } from '../../services/db/mongo-db-definition'
+import { create, updateOne, findMany , findOne } from '../../services/db/mongo-db-definition'
 
 export const addNetworkDetails = async (req, res) => {
     const dataToCreate = req.body;
     try {
         try {
             const result = await create(NetworkDetails, dataToCreate);
-
             res.success({ data: result })
         } catch (error) {
             console.error("Error inserting data: ", error);
@@ -22,7 +21,6 @@ export const getAllNetworkDetails = async (req, res) => {
     const id = { isDeleted: false };
     try {
         const data = await findMany(NetworkDetails, id, {}, { sort: { createdAt: -1 } });
-
         const headers = [
             { headerName: "Portal Name", field: "portalName", filter: true, pinned: 'left', width: 400 },
             { headerName: "Prtal Id", field: "prtalId", filter: true },
@@ -48,11 +46,28 @@ export const updateNetworkDetails = async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
     try {
-        const result = await updateOne(NetworkDetails, { _id: id }, { $set: updateData });
+        const found = await findOne(NetworkDetails, { affiliatesName: updateData.affiliatesName });
+        if (found) {
+            return res.found({ message: "Header Name already exist" });
+        }
+        const result = await updateOne(NetworkDetails, { '_id': id }, { '$set': updateData });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
         res.internalServerError();
     }
 }
+
+export const activeInactiveHeaders = async (req, res) => {
+    const id = req.params.id;
+    const updateData = req.body;
+    try {
+        const result = await updateOne(NetworkDetails, { '_id': id }, { '$set': updateData });
+        res.success({ data: result })
+    } catch (error) {
+        console.log(error);
+        res.internalServerError();
+    }
+}
+
 
