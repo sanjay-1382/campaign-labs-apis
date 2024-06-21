@@ -10,6 +10,7 @@ import {
 router.use((err, req, res, next) => {
     console.error(err.stack);
     res.internalServerError({ message: 'Something went wrong! Please try again.' });
+    next();
 });
 
 router.route('/preset/offer/create').post(addOfferDetails);
