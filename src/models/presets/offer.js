@@ -11,10 +11,6 @@ offerGroupName: {
     default: null
 },
 offerLink: String,
-partnerId: {
-type: String,
-default: null
-},
 personalUnsub: {
     type: String,
     default: null
@@ -44,10 +40,10 @@ categoryId: {
     default: null
 },
 createdBy: {
-    type: Number,
+    type: String,
     default: null
 },
-editedBy: {
+updateBy: {
     type: Number,
     default: null
 },
@@ -71,10 +67,6 @@ networkAdvertiserId: {
     type: Number,
     default: null
 },
-name: {
-    type: String,
-    default: null
-},
 networkOfferId: {
     type: Number,
     default: null
@@ -91,15 +83,35 @@ everFlowOffers: {
     type: String,
     default: null
 },
-creatorName: {
+everFlowAffiliates: {
     type: String,
     default: null
 },
-editorName: {
+updatedBy: {
     type: String,
     default: null
 },
-}, {timestamps: true})
+createdAt: Date,
+createdId: {
+    type: Number,
+    default: null
+},
+updatedAt: Date,
+updatedId: {
+    type: Number,
+    default: null
+},
+deletedId: {
+    type: Number,
+    default: null
+},
+deletedBy: {
+    type: String,
+    default: null
+},
+isDeleted: { type: Boolean, default: false },
+isActive: { type: Boolean, default: true },
+}, {timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }})
 
 offerSchema.pre('save', async (next) => { next(); });
 
