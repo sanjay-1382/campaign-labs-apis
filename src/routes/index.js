@@ -11,9 +11,6 @@ router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
 });
 
-// Use an array for routes
-// router.use('/network',network);
-
 const routes = [
     adminConsole,
     menus,

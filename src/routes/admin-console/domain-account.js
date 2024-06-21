@@ -4,7 +4,9 @@ import { } from '../../controllers/admin-console/domain-account';
 
 // Error handling middleware
 router.use((err, req, res, next) => {
-    res.status(500).send('Something went wrong! Please try again.');
+    console.error(err.stack);
+    res.internalServerError({ message: 'Something went wrong! Please try again.' });
+    next();
 });
 
 // Admin Console Routes
