@@ -11,7 +11,7 @@ export async function addOfferDetails(req, res) {
         offerDetails.networkId = offerDetails.everFlowOffers.networkId;
         offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
         offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
-        offerDetails.everFlowOffers = JSON.stringify(offerDetails.EverFlowOffers);
+        offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
         offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
         try {
             const results = await create(OfferDetails, offerDetails)
@@ -54,7 +54,7 @@ export async function updateOfferDetails(req, res){
             offerDetails.networkId = offerDetails.everFlowOffers.networkId;
             offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
             offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
-            offerDetails.everFlowOffers = JSON.stringify(offerDetails.EverFlowOffers);
+            offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
             offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
         }
         const result = await updateOne(OfferDetails, {_id: id}, offerDetails);
