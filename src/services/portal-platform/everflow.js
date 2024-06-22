@@ -1,9 +1,9 @@
 import { config } from 'dotenv';
 config({ path: './src/configs/.env' });
 import axios from "axios";
-import EverFlowAffiliatesDetails from "../../../models/portal-platform/everflow/affiliates";
-import EverFlowAdvertiserDetails from "../../../models/portal-platform/everflow/advertisers";
-import EverFlowOfferDetails from "../../../models/portal-platform/everflow/offers";
+import EverFlowAffiliatesDetails from "../../models/portal-platform/everflow/affiliates";
+import EverFlowAdvertiserDetails from "../../models/portal-platform/everflow/advertisers";
+import EverFlowOfferDetails from "../../models/portal-platform/everflow/offers";
 
 const axiosInstance = axios.create({
     baseURL: "https://api.eflow.team/v1/networks",
