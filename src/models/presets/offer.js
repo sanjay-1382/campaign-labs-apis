@@ -39,18 +39,8 @@ categoryId: {
     type: Number,
     default: null
 },
-createdBy: {
-    type: String,
-    default: null
-},
-updateBy: {
-    type: Number,
-    default: null
-},
-active: {
-    type: Number,
-    default: 1
-},
+createdBy: String,
+updateBy: Number,
 method: {
     type: Number,
     default: 0
@@ -62,10 +52,6 @@ verticalId: {
 associatedId: {
     type: Number,
     default: 1
-},
-networkAdvertiserId: {
-    type: Number,
-    default: null
 },
 networkOfferId: {
     type: Number,
@@ -87,28 +73,13 @@ everFlowAffiliates: {
     type: String,
     default: null
 },
-updatedBy: {
-    type: String,
-    default: null
-},
+updatedBy: String,
 createdAt: Date,
-createdId: {
-    type: Number,
-    default: null
-},
+createdId: Number,
 updatedAt: Date,
-updatedId: {
-    type: Number,
-    default: null
-},
-deletedId: {
-    type: Number,
-    default: null
-},
-deletedBy: {
-    type: String,
-    default: null
-},
+updatedId: Number,
+deletedId: Number,
+deletedBy: String,
 isDeleted: { type: Boolean, default: false },
 isActive: { type: Boolean, default: true },
 }, {timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }})

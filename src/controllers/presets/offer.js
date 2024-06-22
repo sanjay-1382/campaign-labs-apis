@@ -1,118 +1,110 @@
-import OfferDetails from "../../models/presets/offer";
+import OfferSchema from "../../models/presets/offer";
 import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition";
 
 export async function addOfferDetails(req, res) {
-    const offerDetails = req.body;
-    if (!offerDetails.offerName || !offerDetails.verticalId || !offerDetails.categoryId || !offerDetails.offerLink) {
-        return res.badRequest();
-    }
-    const result = await findOne(OfferDetails, { offerName: offerDetails.offerName })
-    if (!result) {
-        offerDetails.networkId = offerDetails.everFlowOffers.networkId;
-        offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
-        offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
-        offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
-        offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
-        try {
-            const results = await create(OfferDetails, offerDetails)
-            return  res.success({ data: { insertedId: results._id } });
-        } catch (error) {
-            console.error("Error executing query:", error);
+    try {
+        const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } };
+        if (!addToData.offerName || !addToData.verticalId || !addToData.categoryId || !addToData.offerLink) {
+            return res.badRequest({ message: "Please enter required details" });
         }
-    } else {
-        return res.found({ message: "Offer Name Already Exist,Please Type Diffrent Name" });
+        const existing = await findOne(OfferSchema, { offerName: addToData.offerName });
+        if (!existing) {
+            addToData.networkId = addToData.everFlowOffers.networkId;
+            addToData.networkPortalList = JSON.stringify(addToData.networkPortalList);
+            addToData.everFlowNetworks = JSON.stringify(addToData.everFlowNetworks);
+            addToData.everFlowOffers = JSON.stringify(addToData.everFlowOffers);
+            addToData.everFlowAffiliates = JSON.stringify(addToData.everFlowAffiliates);
+
+            const results = await create(OfferSchema, addToData)
+            return res.success({ data: { insertedId: results._id }, message: "offer data added successfully" });
+
+        } else {
+            return res.found({ message: "offer already exist" });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.internalServerError()
     }
 }
 
 export async function getAllOffers(req, res) {
     try {
-        const offerList = await findMany(OfferDetails, {}, {}, { sort: { createdAt: -1 } });
-        return res.success({ data: offerList })
+        const result = await findMany(OfferSchema, {}, {}, { sort: { createdAt: -1 } });
+        if (!result) return res.notFound({ message: "offer data not found" })
+        return res.success({ data: result, message: "offer data get successfully" })
     } catch (error) {
         console.error(error);
-        return res.internalServerError({ message: error.message });
+        return res.internalServerError();
     }
 }
 
 export async function getOfferById(req, res) {
     try {
         const { id } = req.params;
-        const offer = await findOne(OfferDetails, { _id: id });
-        if (!offer) { return res.notFound() }
-        return res.success({ data: offer })
+        const result = await findOne(OfferSchema, { _id: id });
+        if (!result) { return res.notFound({ message: "offer data not found" }) }
+        return res.success({ data: result, message: "offer data get successfully" })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
     }
 }
 
-export async function updateOfferDetails(req, res){
-    try{
+export async function updateOfferDetails(req, res) {
+    try {
         const { id } = req.params;
-        const offerDetails = req.body;
-        if(offerDetails){
-            offerDetails.networkId = offerDetails.everFlowOffers.networkId;
-            offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
-            offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
-            offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
-            offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
+        const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
+        if (updateToData) {
+            updateToData.networkId = updateToData.everFlowOffers.networkId;
+            updateToData.networkPortalList = JSON.stringify(updateToData.networkPortalList);
+            updateToData.everFlowNetworks = JSON.stringify(updateToData.everFlowNetworks);
+            updateToData.everFlowOffers = JSON.stringify(updateToData.everFlowOffers);
+            updateToData.everFlowAffiliates = JSON.stringify(updateToData.everFlowAffiliates);
         }
-        const result = await updateOne(OfferDetails, {_id: id}, offerDetails);
-        if(!result){
-          return res.notFound("data not found")
+        const result = await updateOne(OfferSchema, { _id: id }, updateToData);
+        if (!result) {
+            return res.notFound("offer data not found")
         }
-        return res.success({ data: { insertedId: result._id },  message: "Offer Details Updated Successfully"});
-    }catch(error){
+        return res.success({ data: { insertedId: result._id }, message: "offer details updated successfully" });
+    } catch (error) {
         console.error(error);
         return res.internalServerError();
     }
 }
 
-export async function activeInactiveDatabaseDetails(req, res){
-    try{
+export async function activeInactiveDatabaseDetails(req, res) {
+    try {
         const { id } = req.params;
-        const {active} = req.body;
-        const result = await findOne(OfferDetails, { _id: id})
-      if(result){
-       if(active === false){
-        result.isActive = false;
-        await updateOne(OfferDetails, {_id: id}, result);
-        return res.success({data: { updatedId: result._id },  message: "Offer Active Status Updated Successfully"})
-       }else{
-        result.isActive = true;
-        await updateOne(OfferDetails, {_id: id}, result);
-        return res.success({data: { updatedId: result._id },  message: "Offer Active Status Updated Successfully"})
-       }
-      }else{
-        return res.notFound("data not found")
-      }
-        
-    }catch(error){
+        const existing = await findOne(OfferSchema, { _id: id });
+        if (!existing) return res.notFound({ message: "offer data not found" });
+
+        existing.isActive === true ? existing.isActive = false : existing.isActive = true;
+
+        const result = await updateOne(OfferSchema, { _id: id }, existing)
+        return res.success({ data: { updatedId: result._id }, message: "offer active status updated successfully" })
+    } catch (error) {
         console.error(error);
-        return res.internalServerError();
+        return res.internalServerError()
     }
 }
 
-export async function softDeleteDatabaseDetails(req, res){
-    try{
+export async function softDeleteDatabaseDetails(req, res) {
+    try {
         const { id } = req.params;
-        const {deletedBy, deletedId } = req.body;
-        const result = await findOne(OfferDetails, { _id: id});
-        if(result){
-            if(result.isActive === true){
-              return res.validationError({message: "Please inActive offer, Before delete"})
-            }
-            result.isDeleted = true;
-            result.deletedId = deletedId;
-            result.deletedBy = deletedBy;
-            await updateOne(OfferDetails, {_id: id}, result);
-            return res.success({data: { updatedId: result._id },  message: "Offer Data Deleted Successfully"})
-        }else{
-            return res.notFound("data not found")
-        }
-    }catch(error){
+        const deleteToData = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
+        const existing = await findOne(OfferSchema, { _id: id });
+        if (!existing) return res.notFound({ message: "offer data not found" });
+        if (existing.isActive === true) return res.failure({ message: "please inActive offer, before delete" });
+
+        existing.isDeleted = true;
+        existing.deletedId = deleteToData.deletedId;
+        existing.deletedBy = deleteToData.deletedBy;
+
+        const result = await updateOne(OfferSchema, { _id: id }, existing)
+        return res.success({ data: { updatedId: result._id }, message: "offer data deleted successfully" })
+    } catch (error) {
         console.error(error);
-        return res.internalServerError();
+        return res.internalServerError()
     }
 }
 
