@@ -6,6 +6,8 @@ import adminConsole from './admin-console/domain-account';
 import menus from './campaign-journey/controls/menus';
 import network from './presets/network';
 import offers from './presets/offer';
+import headers from './presets/header';
+import footer from './presets/footer'
 import pool from './presets/pool';
 import everflow from './portal-platform/everflow';
 
@@ -19,6 +21,8 @@ const routes = [
     network,
     offers,
     pool,
+    headers,
+    footer,
     everflow
 ];
 
