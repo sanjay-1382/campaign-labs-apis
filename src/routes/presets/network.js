@@ -4,7 +4,8 @@ const router = Router();
 import {
     addNetworkDetails,
     getAllNetworkDetails,
-    updateNetworkDetails
+    updateNetworkDetails,
+    activeInactiveHeaders,
 } from '../../controllers/presets/network'
 
 // Error handling middleware
