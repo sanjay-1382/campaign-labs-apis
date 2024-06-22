@@ -1,7 +1,7 @@
 import NetworkSchema from '../../models/presets/network';
 import { create, updateOne, findMany, findOne } from '../../services/db/mongo-db-definition'
 
-export const addNetworkSchema = async (req, res) => {
+export const addNetworkDetails = async (req, res) => {
     const dataToCreate = req.body;
     try {
         try {
