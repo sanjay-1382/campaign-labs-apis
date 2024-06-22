@@ -4,17 +4,17 @@ import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db
 
 export const addFooterkDetails = async (req, res) => {
     try {
-        const FooterData = req.body;
-        if (!FooterData.footerName || !FooterData.footerMessage) {
+        const { data, user } = req.body;
+        const dataToCreate = { ...data, createdId: user.id, createdBy: user.name };
+        if (!dataToCreate.footerName || !dataToCreate.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
-        try {
-            const result = await create(FooterDetails, FooterData);
-            res.success({ data: result });
-        } catch (error) {
-            console.log(error);
-            return res.found({ message: "Footer Name already exist" })
+        const found = await findOne(FooterDetails, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
+        if (found) {
+            return res.found({ message: "Footer Name already exist" });
         }
+        const result = await create(FooterDetails, dataToCreate);
+        res.success({ data: result });
     } catch (error) {
         console.log(error);
         return res.internalServerError();
@@ -22,16 +22,19 @@ export const addFooterkDetails = async (req, res) => {
 }
 
 export const getAllFooterDetails = async (req, res) => {
-    const id = { isDeleted: false };
     try {
-        const result = await findMany(FooterDetails, id, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(FooterDetails, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         const header = [
-            { headerName: "Id", field: "_id", filter: true, pinned: 'left', width: 400 },
-            { headerName: "Footer Name", field: "footerName", filter: true },
+            { headerName: "Id", field: "_id", filter: true },
+            { headerName: "Footer Name", field: "footerName", filter: true, pinned: 'left', width: 400 },
             { headerName: "Footer Message", field: "footerMessage", filter: true },
             { headerName: "Associted Id", field: "associtedId", filter: true },
             { headerName: "Created Id", field: "createdId", filter: true },
             { headerName: "Created By", field: "createdBy", filter: true },
+            { headerName: "Updated Id", field: "updatedId", filter: true },
+            { headerName: "Updated By", field: "updatedBy", filter: true },
+            { headerName: "Deleted Id", field: "deletedId", filter: true },
+            { headerName: "Deleted By", field: "deletedBy", filter: true },
             { headerName: "Is Active", field: "isActive", filter: true },
             { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
@@ -45,17 +48,18 @@ export const getAllFooterDetails = async (req, res) => {
 }
 
 export const updateFooterkDetails = async (req, res) => {
-    const id = req.params.id;
-    const footerData = req.body;
-    if (!footerData.footerName || !footerData.footerMessage) {
-        return res.badRequest({ message: "Footer Name And Footer Message are required" });
-    }
     try {
-        const found = await findOne(FooterDetails, { footerName: footerData.footerName });
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToUpdate = { ...data,  updatedId: user.id , updatedBy:user.name };
+        if (!dataToUpdate.footerName || !dataToUpdate.footerMessage) {
+            return res.badRequest({ message: "Footer Name And Footer Message are required" });
+        }
+        const found = await findOne(FooterDetails, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Footer Name already exist" });
         }
-        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': footerData });
+        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToUpdate });
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -64,13 +68,31 @@ export const updateFooterkDetails = async (req, res) => {
 }
 
 export const activeInactiveFooter = async (req, res) => {
-    const id = req.params.id;
-    const FooterData = req.body;
-    if (!FooterData.footerName || !FooterData.footerMessage) {
-        return res.badRequest({ message: "Footer Name And Footer Message are required" });
-    }
     try {
-        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': FooterData });
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToActiveInactive = { ...data,  updatedId: user.id , updatedBy:user.name };
+        if (!dataToActiveInactive.footerName || !dataToActiveInactive.footerMessage) {
+            return res.badRequest({ message: "Footer Name And Footer Message are required" });
+        }
+        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToActiveInactive });
+        res.success({ data: result });
+    } catch (error) {
+        console.log(error);
+        return res.internalServerError();
+    }
+}
+
+
+export const deleteFooterDetails = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToDelete = { ...data,  deletedId: user.id , deletedBy:user.name };
+        if (!dataToDelete.footerName || !dataToDelete.footerMessage) {
+            return res.badRequest({ message: "Footer Name And Footer Message are required" });
+        }
+        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToDelete });
         res.success({ data: result });
     } catch (error) {
         console.log(error);

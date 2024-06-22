@@ -1,6 +1,5 @@
-
 import NetworkDetails from '../../models/presets/network';
-import { create, updateOne, findMany , findOne } from '../../services/db/mongo-db-definition'
+import { create, updateOne, findMany, findOne } from '../../services/db/mongo-db-definition'
 
 export const addNetworkDetails = async (req, res) => {
     const dataToCreate = req.body;
@@ -69,5 +68,4 @@ export const activeInactiveHeaders = async (req, res) => {
         res.internalServerError();
     }
 }
-
 
