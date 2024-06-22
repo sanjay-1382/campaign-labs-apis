@@ -1,11 +1,11 @@
-import NetworkDetails from '../../models/presets/network';
+import NetworkSchema from '../../models/presets/network';
 import { create, updateOne, findMany, findOne } from '../../services/db/mongo-db-definition'
 
-export const addNetworkDetails = async (req, res) => {
+export const addNetworkSchema = async (req, res) => {
     const dataToCreate = req.body;
     try {
         try {
-            const result = await create(NetworkDetails, dataToCreate);
+            const result = await create(NetworkSchema, dataToCreate);
             res.success({ data: result })
         } catch (error) {
             console.error("Error inserting data: ", error);
@@ -19,7 +19,7 @@ export const addNetworkDetails = async (req, res) => {
 export const getAllNetworkDetails = async (req, res) => {
     const id = { isDeleted: false };
     try {
-        const data = await findMany(NetworkDetails, id, {}, { sort: { createdAt: -1 } });
+        const data = await findMany(NetworkSchema, id, {}, { sort: { createdAt: -1 } });
         const headers = [
             { headerName: "Portal Name", field: "portalName", filter: true, pinned: 'left', width: 400 },
             { headerName: "Prtal Id", field: "prtalId", filter: true },
@@ -45,11 +45,11 @@ export const updateNetworkDetails = async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
     try {
-        const found = await findOne(NetworkDetails, { affiliatesName: updateData.affiliatesName });
+        const found = await findOne(NetworkSchema, { affiliatesName: updateData.affiliatesName });
         if (found) {
             return res.found({ message: "Header Name already exist" });
         }
-        const result = await updateOne(NetworkDetails, { '_id': id }, { '$set': updateData });
+        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': updateData });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
@@ -61,7 +61,7 @@ export const activeInactiveHeaders = async (req, res) => {
     const id = req.params.id;
     const updateData = req.body;
     try {
-        const result = await updateOne(NetworkDetails, { '_id': id }, { '$set': updateData });
+        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': updateData });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
