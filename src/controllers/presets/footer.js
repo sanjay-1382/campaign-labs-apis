@@ -1,4 +1,4 @@
-import FooterDetails from '../../models/presets/footer';
+import FooterSchema from '../../models/presets/footer';
 
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
 
@@ -9,11 +9,11 @@ export const addFooterkDetails = async (req, res) => {
         if (!dataToCreate.footerName || !dataToCreate.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
-        const found = await findOne(FooterDetails, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
+        const found = await findOne(FooterSchema, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Footer Name already exist" });
         }
-        const result = await create(FooterDetails, dataToCreate);
+        const result = await create(FooterSchema, dataToCreate);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -23,7 +23,7 @@ export const addFooterkDetails = async (req, res) => {
 
 export const getAllFooterDetails = async (req, res) => {
     try {
-        const result = await findMany(FooterDetails, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(FooterSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         const header = [
             { headerName: "Id", field: "_id", filter: true },
             { headerName: "Footer Name", field: "footerName", filter: true, pinned: 'left', width: 400 },
@@ -55,11 +55,11 @@ export const updateFooterkDetails = async (req, res) => {
         if (!dataToUpdate.footerName || !dataToUpdate.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
-        const found = await findOne(FooterDetails, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
+        const found = await findOne(FooterSchema, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Footer Name already exist" });
         }
-        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToUpdate });
+        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToUpdate });
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -75,7 +75,7 @@ export const activeInactiveFooter = async (req, res) => {
         if (!dataToActiveInactive.footerName || !dataToActiveInactive.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
-        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToActiveInactive });
+        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToActiveInactive });
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -92,7 +92,7 @@ export const deleteFooterDetails = async (req, res) => {
         if (!dataToDelete.footerName || !dataToDelete.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
-        const result = await updateOne(FooterDetails, { '_id': id }, { '$set': dataToDelete });
+        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToDelete });
         res.success({ data: result });
     } catch (error) {
         console.log(error);
