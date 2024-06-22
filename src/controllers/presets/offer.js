@@ -1,76 +1,119 @@
 import OfferDetails from "../../models/presets/offer";
+import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition";
 
-export const addOfferDetails = async (req, res) => {
-    try {
-        const { data, user } = req.body;
-        const dataToCreate = { ...data, createdId: user.id, createdBy: user.name };
-        const existing = await findOne(OfferDetails, { name: dataToCreate.name });
-        if (existing) { return res.found({ message: "Offer name already exists, please select/take a different name." }); }
-        const result = await create(OfferDetails, new OfferDetails(dataToCreate));
-        return res.success({ data: result });
-    } catch (error) {
-        return res.internalServerError({ message: error.message });
+export async function addOfferDetails(req, res) {
+    const offerDetails = req.body;
+    if (!offerDetails.offerName || !offerDetails.verticalId || !offerDetails.categoryId || !offerDetails.offerLink) {
+        return res.badRequest();
+    }
+    const result = await findOne(OfferDetails, { offerName: offerDetails.offerName })
+    if (!result) {
+        offerDetails.networkId = offerDetails.everFlowOffers.networkId;
+        offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
+        offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
+        offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
+        offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
+        try {
+            const results = await create(OfferDetails, offerDetails)
+            return  res.success({ data: { insertedId: results._id } });
+        } catch (error) {
+            console.error("Error executing query:", error);
+        }
+    } else {
+        return res.found({ message: "Offer Name Already Exist,Please Type Diffrent Name" });
     }
 }
 
 export async function getAllOffers(req, res) {
     try {
-        const offerList = await offer.find().sort({ createdAt: -1 });
-        return res.status(200).json({ status: 200, message: "Data fetched successfully", data: offerList });
+        const offerList = await findMany(OfferDetails, {}, {}, { sort: { createdAt: -1 } });
+        return res.success({ data: offerList })
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: "Internal server error" });
+        return res.internalServerError({ message: error.message });
     }
 }
 
 export async function getOfferById(req, res) {
     try {
         const { id } = req.params;
-        const offer = await offer.findById(id);
-
-        if (!offer) { return res.status(404).json({ status: 404, message: "Offer not found" }); }
-
-        return res.status(200).json({ status: 200, message: "Offer fetched successfully", data: offer });
+        const offer = await findOne(OfferDetails, { _id: id });
+        if (!offer) { return res.notFound() }
+        return res.success({ data: offer })
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: 500, message: "Internal server error" });
+        return res.internalServerError();
     }
 }
 
-export async function addOffer(req, res) {
-    const offer = req.body;
-
-    if (offer.offerName || offer.verticalId || offer.EverFlowOffers.network_id || offer.categoryId || offer.offerLink) {
-        return res.status(400).json({ status: 400, message: "Please enter offer details which is required!" })
+export async function updateOfferDetails(req, res){
+    try{
+        const { id } = req.params;
+        const offerDetails = req.body;
+        if(offerDetails){
+            offerDetails.networkId = offerDetails.everFlowOffers.networkId;
+            offerDetails.networkPortalList = JSON.stringify(offerDetails.networkPortalList);
+            offerDetails.everFlowNetworks = JSON.stringify(offerDetails.everFlowNetworks);
+            offerDetails.everFlowOffers = JSON.stringify(offerDetails.everFlowOffers);
+            offerDetails.everFlowAffiliates = JSON.stringify(offerDetails.everFlowAffiliates);
+        }
+        const result = await updateOne(OfferDetails, {_id: id}, offerDetails);
+        if(!result){
+          return res.notFound("data not found")
+        }
+        return res.success({ data: { insertedId: result._id },  message: "Offer Details Updated Successfully"});
+    }catch(error){
+        console.error(error);
+        return res.internalServerError();
     }
-
-    const existOffer = await offer.findOne({ offerName: offer.offer_name });
-
-    if (existOffer) {
-        return res.status(409).json({ status: 409, message: "Offer name already exist,Please type different name" })
-    }
-
-    //    const offerData = new offer({
-    //     offerName: offer.offer_name,
-    //     networkPortalList: JSON.stringify(offer.networkPortalList),
-    //     offerLink: offer.offer_link,
-    //     personalUnsub: ,
-    //     networkUnsub: ,
-    //     payout: ,
-    //     paymentType: ,
-    //     trackerId: ,
-    //     networkId: ,
-    //     categoryId: ,
-    //     createdBy: ,
-    //     verticalId: ,
-    //     networkAdvertiserId: ,
-    //     name: ,
-    //     networkOfferId: ,
-    //     everFlowNetworks: JSON.stringify(offer.EverFlowNetworks),
-    //     everFlowOffers: JSON.stringify(offer.EverFlowOffers),
-    //     creatorName: ,
-
-    //    })
-
-
 }
+
+export async function activeInactiveDatabaseDetails(req, res){
+    try{
+        const { id } = req.params;
+        const {active} = req.body;
+        const result = await findOne(OfferDetails, { _id: id})
+      if(result){
+       if(active === false){
+        result.isActive = false;
+        await updateOne(OfferDetails, {_id: id}, result);
+        return res.success({data: { updatedId: result._id },  message: "Offer Active Status Updated Successfully"})
+       }else{
+        result.isActive = true;
+        await updateOne(OfferDetails, {_id: id}, result);
+        return res.success({data: { updatedId: result._id },  message: "Offer Active Status Updated Successfully"})
+       }
+      }else{
+        return res.notFound("data not found")
+      }
+        
+    }catch(error){
+        console.error(error);
+        return res.internalServerError();
+    }
+}
+
+export async function softDeleteDatabaseDetails(req, res){
+    try{
+        const { id } = req.params;
+        const {deletedBy, deletedId } = req.body;
+        const result = await findOne(OfferDetails, { _id: id});
+        if(result){
+            if(result.isActive === true){
+              return res.validationError({message: "Please inActive offer, Before delete"})
+            }
+            result.isDeleted = true;
+            result.deletedId = deletedId;
+            result.deletedBy = deletedBy;
+            await updateOne(OfferDetails, {_id: id}, result);
+            return res.success({data: { updatedId: result._id },  message: "Offer Data Deleted Successfully"})
+        }else{
+            return res.notFound("data not found")
+        }
+    }catch(error){
+        console.error(error);
+        return res.internalServerError();
+    }
+}
+
+

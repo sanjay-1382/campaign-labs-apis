@@ -9,6 +9,7 @@ import offers from './presets/offer';
 import headers from './presets/header';
 import footer from './presets/footer'
 import pool from './presets/pool';
+import everflow from './portal-platform/everflow';
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
@@ -19,9 +20,10 @@ const routes = [
     menus,
     network,
     offers,
+    pool,
     headers,
     footer,
-    pool
+    everflow
 ];
 
 // Use forEach to apply routes
