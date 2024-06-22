@@ -20,4 +20,4 @@ const header = new Schema({
 
 header.pre('save', async (next) => { next(); });
 
-export default model("header", header); 
+export default model("headerdetails", header); 

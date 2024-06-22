@@ -12,29 +12,29 @@ const offerSchema = new Schema({
     trackerId: { type: Number, default: null },
     networkId: { type: Number, default: null },
     categoryId: { type: Number, default: null },
-    updateBy: { type: Number, default: null },
-    active: { type: Number, default: 1 },
+    createdBy: String,
+    updateBy: Number,
     method: { type: Number, default: 0 },
     verticalId: { type: Number, default: null },
     associatedId: { type: Number, default: 1 },
-    networkAdvertiserId: { type: Number, default: null },
     networkOfferId: { type: Number, default: null },
     networkPortalList: { type: String, default: null },
     everFlowNetworks: { type: String, default: null },
     everFlowOffers: { type: String, default: null },
     everFlowAffiliates: { type: String, default: null },
-    updatedBy: { type: String, default: null },
+    updatedBy: String,
     createdAt: Date,
-    createdId: { type: Number, default: null },
-    createdBy: { type: String, default: null },
+    createdId: Number,
     updatedAt: Date,
-    updatedId: { type: Number, default: null },
-    deletedId: { type: Number, default: null },
-    deletedBy: { type: String, default: null },
+    updatedId: Number,
+    deletedId: Number,
+    deletedBy: String,
     isDeleted: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
-}, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } })
+}, {
+    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+})
 
 offerSchema.pre('save', async (next) => { next(); });
 
-export default model("Offer", offerSchema);
+export default model("offerdetails", offerSchema);

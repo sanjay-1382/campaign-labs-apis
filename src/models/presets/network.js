@@ -24,4 +24,4 @@ const network = new Schema({
 
 network.pre('save', async (next) => { next(); });
 
-export default model("network", network); 
+export default model("networkdetails", network); 

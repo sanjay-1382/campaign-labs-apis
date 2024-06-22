@@ -20,4 +20,4 @@ const footerDetails = new Schema({
 
 footerDetails.pre('save', async (next) => { next(); });
 
-export default model("footerDetails", footerDetails); 
+export default model("footerdetails", footerDetails); 
