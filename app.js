@@ -6,10 +6,12 @@ import logger from 'morgan';
 import errorHandler from './src/utils/response/error-handler';
 import indexRouter from './src/routes/index';
 import './src/configs/db-connection';
+import cors from "cors";
 const app = express();
 
 // cors origin
 const corsOptions = { origin: '*', methods: '*', credentials: true };
+app.use(cors({ origin: "*" }));
 
 // Middleware setup
 app.use(logger('dev'));
