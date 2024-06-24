@@ -1,8 +1,8 @@
 import { config } from 'dotenv';
 config({ path: './src/configs/.env' });
 import axios from "axios";
-import EverFlowAffiliatesDetails from "../../models/portal-platform/everflow/affiliates";
 import EverFlowAdvertiserDetails from "../../models/portal-platform/everflow/advertisers";
+import EverFlowAffiliatesDetails from "../../models/portal-platform/everflow/affiliates";
 import EverFlowOfferDetails from "../../models/portal-platform/everflow/offers";
 
 const axiosInstance = axios.create({
@@ -30,6 +30,6 @@ async function fetchAndStoreData(endpoint, pageSize, modelSchema) {
     }
 }
 
-export async function storeAffiliates() { await fetchAndStoreData('affiliates', 150, EverFlowAffiliatesDetails); }
-export async function storeAdvertisers() { await fetchAndStoreData('advertisers', 150, EverFlowAdvertiserDetails); }
-export async function storeOffers() { await fetchAndStoreData('offers', 200, EverFlowOfferDetails); }
+export async function storeAdvertisers() { await fetchAndStoreData('advertisers', 500, EverFlowAdvertiserDetails); }
+export async function storeAffiliates() { await fetchAndStoreData('affiliates', 500, EverFlowAffiliatesDetails); }
+export async function storeOffers() { await fetchAndStoreData('offers', 500, EverFlowOfferDetails); }
