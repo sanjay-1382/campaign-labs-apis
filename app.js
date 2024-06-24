@@ -1,4 +1,5 @@
 import createError from 'http-errors';
+import cors from 'cors';
 import express, { json, urlencoded, static as _static } from 'express';
 import { join } from 'path';
 import cookieParser from 'cookie-parser';
@@ -10,6 +11,7 @@ const app = express();
 
 // cors origin
 const corsOptions = { origin: '*', methods: '*', credentials: true };
+app.use(cors({ origin: '*' }));
 
 // Middleware setup
 app.use(logger('dev'));
