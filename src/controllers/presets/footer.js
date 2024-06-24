@@ -2,13 +2,14 @@ import FooterSchema from '../../models/presets/footer';
 
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
 
-export const addFooterkDetails = async (req, res) => {
+import { addFooterValidation, updateFooterValidation } from '../../utils/validations/joi/footer';
+
+export const addFooterDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
         const dataToCreate = { ...data, createdId: user.id, createdBy: user.name };
-        if (!dataToCreate.footerName || !dataToCreate.footerMessage) {
-            return res.badRequest({ message: "Footer Name And Footer Message are required" });
-        }
+        const { error } = addFooterValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
         const found = await findOne(FooterSchema, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Footer Name already exist" });
@@ -47,14 +48,13 @@ export const getAllFooterDetails = async (req, res) => {
     }
 }
 
-export const updateFooterkDetails = async (req, res) => {
+export const updateFooterDetails = async (req, res) => {
     try {
         const id = req.params.id;
         const { data, user } = req.body;
-        const dataToUpdate = { ...data,  updatedId: user.id , updatedBy:user.name };
-        if (!dataToUpdate.footerName || !dataToUpdate.footerMessage) {
-            return res.badRequest({ message: "Footer Name And Footer Message are required" });
-        }
+        const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name };
+        const {error} = updateFooterValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
         const found = await findOne(FooterSchema, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Footer Name already exist" });
@@ -71,7 +71,7 @@ export const activeInactiveFooter = async (req, res) => {
     try {
         const id = req.params.id;
         const { data, user } = req.body;
-        const dataToActiveInactive = { ...data,  updatedId: user.id , updatedBy:user.name };
+        const dataToActiveInactive = { ...data, updatedId: user.id, updatedBy: user.name };
         if (!dataToActiveInactive.footerName || !dataToActiveInactive.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
@@ -88,7 +88,7 @@ export const deleteFooterDetails = async (req, res) => {
     try {
         const id = req.params.id;
         const { data, user } = req.body;
-        const dataToDelete = { ...data,  deletedId: user.id , deletedBy:user.name };
+        const dataToDelete = { ...data, deletedId: user.id, deletedBy: user.name };
         if (!dataToDelete.footerName || !dataToDelete.footerMessage) {
             return res.badRequest({ message: "Footer Name And Footer Message are required" });
         }
