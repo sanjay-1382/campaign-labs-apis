@@ -5,7 +5,6 @@ import {
     addNetworkDetails,
     getAllNetworkDetails,
     updateNetworkDetails,
-    activeInactiveHeaders,
 } from '../../controllers/presets/network'
 
 // Error handling middleware

@@ -2,9 +2,9 @@ import { Router } from "express";
 const router = Router();
 
 import {
-    addFooterkDetails,
+    addFooterDetails,
     getAllFooterDetails,
-    updateFooterkDetails,
+    updateFooterDetails,
     activeInactiveFooter,
     deleteFooterDetails
 } from "../../controllers/presets/footer";
@@ -16,9 +16,9 @@ router.use((err, req, res, next) => {
     next();
 });
 
-router.route("/preset/footer/create").post(addFooterkDetails);
+router.route("/preset/footer/create").post(addFooterDetails);
 router.route("/preset/footer/details").get(getAllFooterDetails);
-router.route("/preset/footer/update/:id").put(updateFooterkDetails);
+router.route("/preset/footer/update/:id").put(updateFooterDetails);
 router.route("/preset/footer/active-inactive/:id").put(activeInactiveFooter);
 router.route("/preset/footer/delete/:id").delete(deleteFooterDetails);
 
