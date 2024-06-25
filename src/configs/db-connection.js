@@ -6,16 +6,17 @@ import ClickHouse from '@apla/clickhouse';
 import { ClickHouse as _ClickHouse } from 'clickhouse';
 import { createPool } from 'generic-pool';
 
-const { CL_MONGODB_ADMIN, CL_MONGODB_HOST, CL_MONGODB_PORT, CL_MONGODB_USERNAME, CL_MONGODB_PASSWORD, CL_MONGODB_SCHEME, CL_CLICKHOUSE_HOST, CL_CLICKHOUSE_PORT, CL_CLICKHOUSE_USER, CL_CLICKHOUSE_PASSWORD, CL_CLICKHOUSE_PROTOCOL, CL_CLICKHOUSE_DATA_OBJECTS, CL_CLICKHOUSE_CONNECT_TIMEOUT, CL_CLICKHOUSE_DATABASE, CL_CLICKHOUSE_MAX, CL_CLICKHOUSE_MIN, CL_CLICKHOUSE_ACQUIRE_TIMEOUT_MILLIS, CL_CLICKHOUSE_IDLE_TIMEOUT_MILLIS, CL_PRIMARY_MYSQL_HOST, CL_MYSQL_PORT, CL_PRIMARY_MYSQL_USER, CL_PRIMARY_MYSQL_PASSWORD, CL_PRIMARY_MYSQL_DATABASE, CL_MYSQL_DIALECT, CL_MYSQL_CHARSET, CL_MYSQL_MAX, CL_MYSQL_MIN, CL_MYSQL_ACQUIRE, CL_MYSQL_IDLE, CL_MYSQL_PING_INTERVAL, CL_SECONDARY_MYSQL_HOST, CL_SECONDARY_MYSQL_USER, CL_SECONDARY_MYSQL_PASSWORD, CL_SECONDARY_MYSQL_DATABASE } = process.env;
+const { CL_MONGODB_ADMIN, CL_MONGODB_HOST, CL_MONGODB_PORT, CL_MONGODB_USERNAME, CL_MONGODB_PASSWORD, CL_MONGODB_SCHEME, CL_CLICKHOUSE_HOST, CL_CLICKHOUSE_PORT, CL_CLICKHOUSE_USER, CL_CLICKHOUSE_PASSWORD, CL_CLICKHOUSE_PROTOCOL, CL_CLICKHOUSE_DATA_OBJECTS, CL_CLICKHOUSE_CONNECT_TIMEOUT, CL_CLICKHOUSE_DATABASE, CL_CLICKHOUSE_MAX, CL_CLICKHOUSE_MIN, CL_CLICKHOUSE_ACQUIRE_TIMEOUT_MILLIS, CL_CLICKHOUSE_IDLE_TIMEOUT_MILLIS, CL_MYSQL_PORT, CL_PRIMARY_MYSQL_HOST, CL_PRIMARY_MYSQL_USER, CL_PRIMARY_MYSQL_PASSWORD, CL_PRIMARY_MYSQL_DATABASE, CL_SECONDARY_MYSQL_HOST, CL_SECONDARY_MYSQL_USER, CL_SECONDARY_MYSQL_PASSWORD, CL_SECONDARY_MYSQL_DATABASE, CL_MYSQL_DIALECT, CL_MYSQL_CHARSET, CL_MYSQL_MAX, CL_MYSQL_MIN, CL_MYSQL_ACQUIRE, CL_MYSQL_IDLE, CL_MYSQL_PING_INTERVAL } = process.env;
 
 const mongoUri = `mongodb://${CL_MONGODB_USERNAME}:${CL_MONGODB_PASSWORD}@${CL_MONGODB_HOST}:${CL_MONGODB_PORT}/${CL_MONGODB_SCHEME}?authMechanism=DEFAULT&authSource=${CL_MONGODB_ADMIN}`;
+const message = 'Database Connection Established Successfully!!';
 
 set('strictQuery', false);
 set('bufferCommands', true);
 set('bufferTimeoutMS', 20000); // Set to 20000 milliseconds (20 second)
 connect(mongoUri);
 connection.once('open', () => {
-    console.log(`MongoDB: "${CL_MONGODB_SCHEME.toUpperCase().replace('_', '')}" Database Connection Established Successfully......`);
+    console.log(`MongoDB: "${CL_MONGODB_SCHEME.toUpperCase().replace('_', '')}" ${message}`);
 }).on('error', (err) => {
     console.log('Error while connecting to DB: ' + err);
 });
@@ -106,7 +107,7 @@ const createMysqlPool = (config) => {
         if (err) {
             console.error(`Connection error: ${err.code}, ${err.sqlMessage}`);
         } else {
-            console.log(`MySQL: "${config.database.toUpperCase().replace('_', '')}" Database Connection Established Successfully......`);
+            console.log(`MySQL: "${config.database.toUpperCase().replace('_', '')}" ${message}`);
         }
     });
     // Ping the connection periodically to keep it alive
