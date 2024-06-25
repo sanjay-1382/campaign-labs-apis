@@ -1,9 +1,9 @@
 import { Schema, model } from "mongoose";
 
-const journeyMenuSchema = Schema(
+const journeyControlSchema = Schema(
     {
         itemData: { type: Array, default: [], required: true }
     }
 );
 
-export default model("journeymenu", journeyMenuSchema);
+export default model("journeycontrols", journeyControlSchema);
