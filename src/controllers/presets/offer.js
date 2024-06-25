@@ -1,19 +1,20 @@
 import OfferSchema from "../../models/presets/offer";
 import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition";
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
 
 export async function addOfferDetails(req, res) {
     try {
         const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } };
-        if (!addToData.offerName || !addToData.verticalId || !addToData.categoryId || !addToData.offerLink) {
-            return res.badRequest({ message: "Please enter required details" });
-        }
+        
+        const {error} = addPoolValidator(req.body.data);
+        if (error) { return res.validationError({ message: error.message }); }
+
         const existing = await findOne(OfferSchema, { offerName: addToData.offerName });
         if (!existing) {
-            addToData.networkId = addToData.everFlowOffers.networkId;
             addToData.networkPortalList = JSON.stringify(addToData.networkPortalList);
-            addToData.everFlowNetworks = JSON.stringify(addToData.everFlowNetworks);
-            addToData.everFlowOffers = JSON.stringify(addToData.everFlowOffers);
-            addToData.everFlowAffiliates = JSON.stringify(addToData.everFlowAffiliates);
+            addToData.network = JSON.stringify(addToData.network);
+            addToData.offer = JSON.stringify(addToData.offer);
+            addToData.affiliate = JSON.stringify(addToData.affiliate);
 
             const results = await create(OfferSchema, addToData)
             return res.success({ data: { insertedId: results._id }, message: "offer data added successfully" });
@@ -31,6 +32,11 @@ export async function getAllOffers(req, res) {
     try {
         const result = await findMany(OfferSchema, {}, {}, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "offer data not found" })
+        const headers = [
+    {fieldName: "offerName", field:"offerName", filter:true, pinned: "left", width:"400" },
+    {fieldName: "offerGroupId", field:"offerGroupId"},
+  
+        ]
         return res.success({ data: result, message: "offer data get successfully" })
     } catch (error) {
         console.error(error);
@@ -54,12 +60,15 @@ export async function updateOfferDetails(req, res) {
     try {
         const { id } = req.params;
         const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
+        
+        const {error} = updatePoolValidator(req.body.data);
+        if (error) { return res.validationError({ message: error.message }); }
+
         if (updateToData) {
-            updateToData.networkId = updateToData.everFlowOffers.networkId;
             updateToData.networkPortalList = JSON.stringify(updateToData.networkPortalList);
-            updateToData.everFlowNetworks = JSON.stringify(updateToData.everFlowNetworks);
-            updateToData.everFlowOffers = JSON.stringify(updateToData.everFlowOffers);
-            updateToData.everFlowAffiliates = JSON.stringify(updateToData.everFlowAffiliates);
+            updateToData.network = JSON.stringify(updateToData.network);
+            updateToData.offer = JSON.stringify(updateToData.offer);
+            updateToData.affiliate = JSON.stringify(updateToData.affiliate);
         }
         const result = await updateOne(OfferSchema, { _id: id }, updateToData);
         if (!result) {

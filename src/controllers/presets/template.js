@@ -1,10 +1,12 @@
 import TemplateSchema from "../../models/presets/template"
 import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition"
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/template"
 
 export async function addTemplateDetails(req, res) {
     try {
         const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } }
-        if (!addToData.templateName) return res.badRequest({ message: "template name required" })
+        const {error} = addPoolValidator(req.body.data) 
+        if (error) { return res.validationError({ message: error.message }); }
 
         const existing = await findOne(TemplateSchema, { templateName: addToData.templateName });
         if (existing) return res.found({ message: "template already exist" });
@@ -46,7 +48,10 @@ export async function updateTemplateDetails(req, res) {
     try {
         const { id } = req.params;
         const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
-        if (!id) return res.badRequest({ message: "template id required" });
+        if (!id) return res.badRequest({ message: "template id is required" });
+
+        const {error} = updatePoolValidator(req.body.data) 
+        if (error) { return res.validationError({ message: error.message }); }
 
         const existing = await updateOne(TemplateSchema, { _id: id }, updateToData);
         if (!existing) return res.notFound({ message: "template data not found" })
