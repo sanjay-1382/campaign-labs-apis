@@ -9,7 +9,7 @@ export async function addOfferDetails(req, res) {
         const {error} = addPoolValidator(req.body.data);
         if (error) { return res.validationError({ message: error.message }); }
 
-        const existing = await findOne(OfferSchema, { offerName: addToData.offerName });
+        const existing = await findOne(OfferSchema, {$and: [ { offerName: addToData.offerName }, {isDeleted: false}]});
         if (!existing) {
             addToData.networkPortalList = JSON.stringify(addToData.networkPortalList);
             addToData.network = JSON.stringify(addToData.network);
@@ -33,9 +33,19 @@ export async function getAllOffers(req, res) {
         const result = await findMany(OfferSchema, {}, {}, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "offer data not found" })
         const headers = [
-    {fieldName: "offerName", field:"offerName", filter:true, pinned: "left", width:"400" },
-    {fieldName: "offerGroupId", field:"offerGroupId"},
-  
+    {fieldName: "Offer Name", field:"offerName", filter:true, pinned: "left", width:"400" },
+    {fieldName: "Offer Id", field:"offerId"},
+    {fieldName: "Portal Name", field:"networkPortalList.networkPortalName"},
+    {fieldName: "Advertiser Id", field:"network.network_advertiser_id"},
+    {fieldName: "Advertiser Name", field:"network.name"},
+    {fieldName: "Advertiser Name", field:"network.name"},
+    {fieldName: "Affiliate Id", field:"affiliate.network_affiliate_id"},
+    {fieldName: "Affiliate Name", field:"affiliate.name"},
+    {fieldName: "URL", field:"offerLink"},
+    {fieldName: "Payout", field:"payout"},
+    {fieldName: "Payment Term", field:"paymentType"},
+    {fieldName: "Created By", field:"createdBy"},
+    {fieldName: "Created At", field:"createdAt"},
         ]
         return res.success({ data: result, message: "offer data get successfully" })
     } catch (error) {

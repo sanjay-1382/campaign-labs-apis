@@ -8,7 +8,7 @@ export async function addTemplateDetails(req, res) {
         const {error} = addPoolValidator(req.body.data) 
         if (error) { return res.validationError({ message: error.message }); }
 
-        const existing = await findOne(TemplateSchema, { templateName: addToData.templateName });
+        const existing = await findOne(TemplateSchema,  {$and: [ { templateName: addToData.templateName }, {isDeleted: false}]});
         if (existing) return res.found({ message: "template already exist" });
 
         const result = await create(TemplateSchema, addToData);
@@ -23,6 +23,12 @@ export async function getAllTemplates(req, res) {
     try {
         const result = await findMany(TemplateSchema);
         if (!result) return res.notFound({ message: "template data not found" });
+
+        const headers = [
+            {fieldName: "Template Name", field:"templateName", filter:true, pinned: "left", width:"400" },
+            {fieldName: "Created By", field:"createdBy"},
+            {fieldName: "Created At", field:"createdAt"},
+        ]
 
         return res.success({ data: result, message: "template data get successfully" });
     } catch (error) {
