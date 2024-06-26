@@ -3,11 +3,11 @@ import { Schema, model } from "mongoose";
 const network = new Schema({
     associatedId: Number,
     networkId: Number,
-    networkName: { type: String, required: true, trim: true, unique: true },
+    networkName: { type: String, required: true, trim: true },
     countryId: Number,
     countryName: String,
     trackierId: Number,
-    prtalId: Number,
+    portalId: Number,
     portalName: String,
     // affiliatesId: { type: String, default: null },
     // affiliatesName: { type: String, required: true, trim: true, unique: true },
