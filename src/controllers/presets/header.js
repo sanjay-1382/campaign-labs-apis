@@ -25,7 +25,7 @@ export const addHeaderkDetails = async (req, res) => {
 
 export const getAllHeaderkDetails = async (req, res) => {
     try {
-        const result = await findMany(HeaderSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(HeaderSchema, { isDeleted: false }, { sort: { createdAt: -1 } });
         const data = result.map((item) => ({
             ...item._doc,
             createdAt: getDateAsDDMMMYYYY(item.createdAt),

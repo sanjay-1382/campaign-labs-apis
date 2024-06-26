@@ -13,29 +13,29 @@ export const count = (model, filter = {}) => {
 }
 
 // Find a single document by query
-export const findOne = (model, filter = {}, options = {}) => {
-    return model.findOne(filter, options)
+export const findOne = (model, filter = {}) => {
+    return model.findOne(filter)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
 // Find multiple documents
-export const findMany = (model, filter = {}, options = {}, sortValue = {}) => {
-    return model.find(filter, options, sortValue)
+export const findMany = (model, filter = {}, sortValue = {}) => {
+    return model.find(filter, sortValue)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
 // find multiple documents
-export const findWithLimit = (model, filter = {}, options = {}, limit = 0) => {
-    return model.find(filter, options).limit(limit)
+export const findWithLimit = (model, filter = {}, limit = 0) => {
+    return model.find(filter).limit(limit)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
 // find multiple documents
-export const findMaxValue = (model, filter = {}, options = {}, sortValue = {}) => {
-    return model.find(filter, options, sortValue).limit(1)
+export const findMaxValue = (model, filter = {}, sortValue = {}) => {
+    return model.find(filter, sortValue).limit(1)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
@@ -69,15 +69,15 @@ export const deleteMany = (model, filter = {}) => {
 }
 
 // Aggregate documents
-export const aggregate = (model, filter = {}, options = {}) => {
-    return model.aggregate(filter, options)
+export const aggregate = (model, filter = {}) => {
+    return model.aggregate(filter)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
 // Populate documents
-export const populate = (model, filter = {}, options = {}, aggregateKey = {}) => {
-    return model.find(filter, options,).populate(aggregateKey)
+export const populate = (model, filter = {}, aggregateKey = {}, sortValue = {}) => {
+    return model.find(filter, sortValue).populate(aggregateKey)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }

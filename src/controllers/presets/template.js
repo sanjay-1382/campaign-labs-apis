@@ -11,14 +11,14 @@ export async function addTemplateDetails(req, res) {
         const existing = await findOne(TemplateSchema, { $and: [{ templateName: addToData.templateName }, { isDeleted: false }] });
         if (existing) return res.found({ message: "template name already exist" });
 
-        const maxId = await TemplateSchema.findOne().sort('-templateID').select('templateID');
-        let newTemplateID = 1;
-        if (maxId && maxId.templateID) {
-            newTemplateID = maxId.templateID + 1;
+        const maxId = await findMaxValue(TemplateSchema, {}, { sort: { templateId: -1 } });
+        let newTemplateId = 1;
+        if (maxId[0].templateId) {
+            newTemplateId = maxId[0].templateId + 1;
         }
-        addToData.templateID = newTemplateID;
+        addToData.templateId = newTemplateId;
         const result = await create(TemplateSchema, addToData);
-        if (result) return res.success({ data: { insertdeId: result._id }, message: "template data added successfully" })
+        if (result) return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -27,12 +27,12 @@ export async function addTemplateDetails(req, res) {
 
 export async function getAllTemplates(req, res) {
     try {
-        const result = await findMany(TemplateSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(TemplateSchema, { isDeleted: false }, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "template data not found" });
 
         const data = result.map(item => ({
             _id: item._id,
-            templateID: item.templateID,
+            templateId: item.templateId,
             templateName: item.templateName,
             templateHtml: item.templateHtml,
             templateText: item.templateText,
@@ -53,11 +53,11 @@ export async function getAllTemplates(req, res) {
         }))
 
         const headers = [
-            { fieldName: "Template ID", field: "templateID", filter: true},
-            { fieldName: "Template Name", field: "templateName", filter: true},
-            { fieldName: "Template Html", field: "templateHtml", filter: true},
-            { fieldName: "Template Text", field: "templateText", filter: true},
-            { fieldName: "Template Type", field: "templateType", filter: true},
+            { fieldName: "Template ID", field: "templateId", filter: true },
+            { fieldName: "Template Name", field: "templateName", filter: true },
+            { fieldName: "Template Html", field: "templateHtml", filter: true },
+            { fieldName: "Template Text", field: "templateText", filter: true },
+            { fieldName: "Template Type", field: "templateType", filter: true },
             { fieldName: "Created By", field: "createdBy", filter: true },
             { fieldName: "Created At", field: "createdAt", filter: true },
         ]
@@ -100,7 +100,7 @@ export async function updateTemplateDetails(req, res) {
     }
 }
 
-export async function activeInactiveDatabaseDetails(req, res) {
+export async function activeInactiveTemplateDetails(req, res) {
     try {
         const { id } = req.params;
         const existing = await findOne(TemplateSchema, { _id: id });
@@ -109,14 +109,14 @@ export async function activeInactiveDatabaseDetails(req, res) {
         existing.isActive === true ? existing.isActive = false : existing.isActive = true;
 
         const result = await updateOne(TemplateSchema, { _id: id }, existing)
-        return res.success({ data: { updatedId: result._id }, message: "template active status updated successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError()
     }
 }
 
-export async function softDeleteDatabaseDetails(req, res) {
+export async function softDeleteTemplateDetails(req, res) {
     try {
         const { id } = req.params;
         const existing = await findOne(TemplateSchema, { _id: id });
@@ -126,7 +126,7 @@ export async function softDeleteDatabaseDetails(req, res) {
         existing.isDeleted = true;
 
         const result = await updateOne(TemplateSchema, { _id: id }, existing)
-        return res.success({ data: { updatedId: result._id }, message: "template data deleted successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError()

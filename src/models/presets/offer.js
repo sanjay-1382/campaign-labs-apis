@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const offerSchema = new Schema({
-    offerID: Number,
+    offerId: Number,
     offerName: String,
     offerLink: String,
     personalUnsub: { type: String, default: null },

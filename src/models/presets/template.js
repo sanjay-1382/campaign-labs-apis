@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 
 const templateSchema = new Schema(
     {
-        templateID: Number,
+        templateId: Number,
         templateName: String,
         templateHtml: { type: String, default: null },
         templateText: { type: String, default: null },
