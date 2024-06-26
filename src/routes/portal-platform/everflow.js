@@ -20,8 +20,8 @@ router.use((err, req, res, next) => {
 router.route('/portal-platform/everflow/affiliate/store').get(storeEverflowAffiliatesDetails);
 router.route('/portal-platform/everflow/affiliate-list').get(getEverFlowAffiliateList);
 router.route('/portal-platform/everflow/advertiser/store').get(storeEverflowAdvertisersDetails);
-router.route('/portal-platform/everflow/advertiser-list').get(getEverFlowAdvertiserList);
+router.route('/portal-platform/everflow/advertiser-list').post(getEverFlowAdvertiserList);
 router.route('/portal-platform/everflow/offer/store').get(storeEverflowOffersDetails);
-router.route('/portal-platform/everflow/offer-list').get(getEverFlowOfferList);
+router.route('/portal-platform/everflow/offer-list').post(getEverFlowOfferList);
 
 export default router;
