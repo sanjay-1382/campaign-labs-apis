@@ -19,7 +19,7 @@ export const addPoolDetails = async (req, res) => {
 
 export async function getAllPoolDetails(req, res) {
     try {
-        const result = await findMany(PoolSchema, {}, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(PoolSchema, {}, { sort: { createdAt: -1 } });
         return res.success({ data: result });
     } catch (error) {
         console.error(error);
