@@ -86,12 +86,12 @@ export const activeInactiveFooter = async (req, res) => {
 
 export const deleteFooterDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const id = req?.params?.id;
         const { data, user } = req.body;
         const dataToDelete = { ...data, deletedId: user.id, deletedBy: user.name };
         const { error } = updateFooterValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
-        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToDelete });
+        const result = await updateOne(FooterSchema, { _id: id }, { '$set': dataToDelete });
         res.success({ data: result });
     } catch (error) {
         console.log(error);
