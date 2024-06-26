@@ -1,11 +1,12 @@
 import NetworkSchema from '../../models/presets/network';
-import { create, updateOne, findMany, findOne } from '../../services/db/mongo-db-definition'
-import { addNetworkValidation ,updateNetworkValidation } from '../../utils/validations/joi/network';
+import { create, updateOne, findMany, findOne, populate } from '../../services/db/mongo-db-definition'
+import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/network';
 import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addNetworkDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
+        console.log(data);
         const dataToCreate = { ...data, createdId: user.id, createdBy: user.name }
         const { error } = addNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
@@ -29,17 +30,31 @@ export const addNetworkDetails = async (req, res) => {
 
 export const getAllNetworkDetails = async (req, res) => {
     try {
-        const result = await findMany(NetworkSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
-        const data = result.map((item)=>({
-            ...item._doc,
-            createdAt:getDateAsDDMMMYYYY(item.createdAt),
-            updatedAt:getDateAsDDMMMYYYY(item.updatedAt) 
+        // const result = await findMany(NetworkSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const result = await populate(NetworkSchema, {}, {}, 'portal');
+        // console.log(result);
+        const data = result.map((item) => ({
+            _id: item._id,
+            associatedId: item.associatedId,
+            networkId: item.networkId,
+            networkName: item.networkName,
+            countryId: item.countryId,
+            countryName: item.countryName,
+            portalId: item.portal._id,
+            portalName: item.portal.portalName,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            isActive: item.isActive,
+            isDeleted: item.isDeleted,
+            createdAt: getDateAsDDMMMYYYY(item.createdAt),
+            updatedAt: getDateAsDDMMMYYYY(item.updatedAt)
         }))
         const headers = [
             { headerName: "Network Id", field: "networkId", filter: true, pinned: 'left', width: 300 },
             { headerName: "Network Name", field: "networkName", filter: true },
             { headerName: "Portal Id", field: "portalId", filter: true },
             { headerName: "Portal Name", field: "portalName", filter: true },
+            { headerName: "Associated Id", field: "associatedId", filter: true },
             { headerName: "Created By", field: "createdBy", filter: true },
             { headerName: "Updated By", field: "updatedBy", filter: true },
             { headerName: "Deleted By", field: "deletedBy", filter: true },
