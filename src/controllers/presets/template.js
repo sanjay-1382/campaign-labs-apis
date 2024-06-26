@@ -1,14 +1,22 @@
 import TemplateSchema from "../../models/presets/template"
 import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition"
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/template"
 
 export async function addTemplateDetails(req, res) {
     try {
         const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } }
-        if (!addToData.templateName) return res.badRequest({ message: "template name required" })
+        const { error } = addPoolValidator(req.body.data)
+        if (error) { return res.validationError({ message: error.message }); }
 
-        const existing = await findOne(TemplateSchema, { templateName: addToData.templateName });
-        if (existing) return res.found({ message: "template already exist" });
+        const existing = await findOne(TemplateSchema, { $and: [{ templateName: addToData.templateName }, { isDeleted: false }] });
+        if (existing) return res.found({ message: "template name already exist" });
 
+        const maxId = await TemplateSchema.findOne().sort('-templateID').select('templateID');
+        let newTemplateID = 1;
+        if (maxId && maxId.templateID) {
+            newTemplateID = maxId.templateID + 1;
+        }
+        addToData.templateID = newTemplateID;
         const result = await create(TemplateSchema, addToData);
         if (result) return res.success({ data: { insertdeId: result._id }, message: "template data added successfully" })
     } catch (error) {
@@ -19,10 +27,42 @@ export async function addTemplateDetails(req, res) {
 
 export async function getAllTemplates(req, res) {
     try {
-        const result = await findMany(TemplateSchema);
+        const result = await findMany(TemplateSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "template data not found" });
 
-        return res.success({ data: result, message: "template data get successfully" });
+        const data = result.map(item => ({
+            _id: item._id,
+            templateID: item.templateID,
+            templateName: item.templateName,
+            templateHtml: item.templateHtml,
+            templateText: item.templateText,
+            verticalId: item.verticalId,
+            associatedId: item.associatedId,
+            journeyId: item.journeyId,
+            templateType: item.templateType,
+            createdAt: item.createdAt,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            updatedAt: item.updatedAt,
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
+            deletedId: item.deletedId,
+            deletedBy: item.deletedBy,
+            isDeleted: item.isDeleted,
+            isActive: item.isActive,
+        }))
+
+        const headers = [
+            { fieldName: "Template ID", field: "templateID", filter: true},
+            { fieldName: "Template Name", field: "templateName", filter: true},
+            { fieldName: "Template Html", field: "templateHtml", filter: true},
+            { fieldName: "Template Text", field: "templateText", filter: true},
+            { fieldName: "Template Type", field: "templateType", filter: true},
+            { fieldName: "Created By", field: "createdBy", filter: true },
+            { fieldName: "Created At", field: "createdAt", filter: true },
+        ]
+
+        return res.success({ data: { headers, data }, message: "template data get successfully" });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -33,7 +73,7 @@ export async function getTemplateById(req, res) {
     try {
         const { id } = req.params;
         if (!id) return res.notFound({ message: "template id required" });
-        const result = await findOne(TemplateSchema, { _id: id });
+        const result = await findOne(TemplateSchema, { _id: id, isDeleted: false });
         if (!result) return res.notFound({ message: "template data not found" });
         return res.success({ data: result, message: "template data get successfully" });
     } catch (error) {
@@ -46,9 +86,12 @@ export async function updateTemplateDetails(req, res) {
     try {
         const { id } = req.params;
         const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
-        if (!id) return res.badRequest({ message: "template id required" });
+        if (!id) return res.badRequest({ message: "template id is required" });
 
-        const existing = await updateOne(TemplateSchema, { _id: id }, updateToData);
+        const { error } = updatePoolValidator(req.body.data)
+        if (error) { return res.validationError({ message: error.message }); }
+
+        const existing = await updateOne(TemplateSchema, { _id: id, isDeleted: false }, updateToData);
         if (!existing) return res.notFound({ message: "template data not found" })
         return res.success({ data: { updatedId: existing._id }, message: "template data updated successfully" })
     } catch (error) {
@@ -78,7 +121,7 @@ export async function softDeleteDatabaseDetails(req, res) {
         const { id } = req.params;
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "template data not found" });
-        if (existing.isActive === true) return res.failure({ message: "please inActive template, before delete" });
+        if (existing.isActive === true) return res.failure({ message: "please in-active template, before delete" });
 
         existing.isDeleted = true;
 

@@ -2,11 +2,11 @@ import { Schema, model } from "mongoose";
 
 const templateSchema = new Schema(
     {
+        templateID: Number,
         templateName: String,
         templateHtml: { type: String, default: null },
         templateText: { type: String, default: null },
-        verticalId: { type: Number, default: null },
-        tags: { type: Array, default: null },
+        verticalId: { type: Array, default: null },
         associatedId: Number,
         journeyId: { type: String, default: null },
         templateType: { type: String, default: "general" },
