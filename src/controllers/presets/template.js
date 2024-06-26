@@ -5,15 +5,15 @@ import { addPoolValidator, updatePoolValidator } from "../../utils/validations/j
 export async function addTemplateDetails(req, res) {
     try {
         const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } }
-        const {error} = addPoolValidator(req.body.data) 
+        const { error } = addPoolValidator(req.body.data)
         if (error) { return res.validationError({ message: error.message }); }
 
-        const existing = await findOne(TemplateSchema,  {$and: [ { templateName: addToData.templateName }, {isDeleted: false}]});
+        const existing = await findOne(TemplateSchema, { $and: [{ templateName: addToData.templateName }, { isDeleted: false }] });
         if (existing) return res.found({ message: "template name already exist" });
 
         const maxId = await TemplateSchema.findOne().sort('-templateID').select('templateID');
         let newTemplateID = 1;
-        if(maxId && maxId.templateID){
+        if (maxId && maxId.templateID) {
             newTemplateID = maxId.templateID + 1;
         }
         addToData.templateID = newTemplateID;
@@ -30,13 +30,39 @@ export async function getAllTemplates(req, res) {
         const result = await findMany(TemplateSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "template data not found" });
 
+        const data = result.map(item => ({
+            _id: item._id,
+            templateID: item.templateID,
+            templateName: item.templateName,
+            templateHtml: item.templateHtml,
+            templateText: item.templateText,
+            verticalId: item.verticalId,
+            associatedId: item.associatedId,
+            journeyId: item.journeyId,
+            templateType: item.templateType,
+            createdAt: item.createdAt,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            updatedAt: item.updatedAt,
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
+            deletedId: item.deletedId,
+            deletedBy: item.deletedBy,
+            isDeleted: item.isDeleted,
+            isActive: item.isActive,
+        }))
+
         const headers = [
-            {fieldName: "Template Name", field:"templateName", filter:true, pinned: "left", width:"400" },
-            {fieldName: "Created By", field:"createdBy" , filter:true},
-            {fieldName: "Created At", field:"createdAt", filter:true},
+            { fieldName: "Template ID", field: "templateID", filter: true},
+            { fieldName: "Template Name", field: "templateName", filter: true},
+            { fieldName: "Template Html", field: "templateHtml", filter: true},
+            { fieldName: "Template Text", field: "templateText", filter: true},
+            { fieldName: "Template Type", field: "templateType", filter: true},
+            { fieldName: "Created By", field: "createdBy", filter: true },
+            { fieldName: "Created At", field: "createdAt", filter: true },
         ]
 
-        return res.success({ data: {headers, result}, message: "template data get successfully" });
+        return res.success({ data: { headers, data }, message: "template data get successfully" });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -62,7 +88,7 @@ export async function updateTemplateDetails(req, res) {
         const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
         if (!id) return res.badRequest({ message: "template id is required" });
 
-        const {error} = updatePoolValidator(req.body.data) 
+        const { error } = updatePoolValidator(req.body.data)
         if (error) { return res.validationError({ message: error.message }); }
 
         const existing = await updateOne(TemplateSchema, { _id: id, isDeleted: false }, updateToData);

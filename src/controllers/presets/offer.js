@@ -1,8 +1,7 @@
-import { populate } from "dotenv";
 import OfferSchema from "../../models/presets/offer";
-import { create, findMany, findOne, updateOne, populate } from "../../services/db/mongo-db-definition";
+import { create, findOne, populate, updateOne } from "../../services/db/mongo-db-definition";
 import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
-import PortalSchema from "../../models/portal-platform/portal";
+import { getDateAsDDMMMYYYY } from "../../utils/utility";
 
 export async function addOfferDetails(req, res) {
     try {
@@ -30,76 +29,32 @@ export async function addOfferDetails(req, res) {
     }
 }
 
-// export async function getAllOffers(req, res) {
-//     try {
-//         const result = await findMany(OfferSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
-//         const data = result.map(item => ({
-//             offerName: item.offerName,
-//             offerLink: item.offerLink,
-//             personalUnsub: item.personalUnsub,
-//             networkUnsub: item.networkUnsub,
-//             verticalId: item.verticalId,
-//             subVerticalId: item.subVerticalId,
-//             method: item.method,
-//             associatedId: item.associatedId,
-//             portal: item.portal,
-//             network: item.network,
-//             offer: item.offer,
-//             affiliate: item.affiliate,
-//             createdAt: item.createdAt,
-//             createdId: item.createdId,
-//             createdBy: item.createdBy,
-//             updatedAt: item.updatedAt,
-//             updatedId: item.updatedId,
-//             updatedBy: item.updatedBy,
-//             deletedId: item.deletedId,
-//             deletedBy: item.deletedBy,
-//             isDeleted: item.isDeleted,
-//             isActive: item.isActive,
-//         }))
-//         if (!result) return res.notFound({ message: "offer data not found" })
-//         const headers = [
-//             { fieldName: "Offer Name", field: "offerName", filter: true},
-//             { fieldName: "Offer Id", field: "offerId", filter: true },
-//             { fieldName: "Portal Name", field: "networkPortalList.networkPortalName", filter: true },
-//             { fieldName: "Advertiser Id", field: "network.network_advertiser_id", filter: true },
-//             { fieldName: "Advertiser Name", field: "network.name", filter: true },
-//             { fieldName: "Advertiser Name", field: "network.name", filter: true },
-//             { fieldName: "Affiliate Id", field: "affiliate.network_affiliate_id", filter: true },
-//             { fieldName: "Affiliate Name", field: "affiliate.name", filter: true },
-//             { fieldName: "URL", field: "offerLink", filter: true },
-//             { fieldName: "Payout", field: "payout", filter: true },
-//             { fieldName: "Payment Term", field: "paymentType", filter: true },
-//             { fieldName: "Created By", field: "createdBy", filter: true },
-//             { fieldName: "Created At", field: "createdAt", filter: true },
-//         ]
-//         return res.success({ data: { headers, data }, message: "offer data get successfully" })
-//     } catch (error) {
-//         console.error(error);
-//         return res.internalServerError();
-//     }
-// }
-
 export async function getAllOffers(req, res) {
     try {
-        const result = await populate(OfferSchema, { isDeleted: false }, {}, "portal");
+        const result = await populate(OfferSchema, { isDeleted: false }, {}, "portal network offer affiliate");
         const data = result.map(item => ({
-            offerName: item.offerName,
+            _id: item._id,
+            offerId: item.offer.network_offer_id,
+            offerName: item.offer.name,
+            portalName: item.portal.portalName,
+            networkId: item.network.network_advertiser_id,
+            networkName: item.network.name,
+            affiliateId: item.affiliate.network_affiliate_id,
+            affiliateName: item.affiliate.name,
             offerLink: item.offerLink,
+
             personalUnsub: item.personalUnsub,
             networkUnsub: item.networkUnsub,
             verticalId: item.verticalId,
             subVerticalId: item.subVerticalId,
             method: item.method,
             associatedId: item.associatedId,
-            portal: item.portal,
-            network: item.network,
-            offer: item.offer,
-            affiliate: item.affiliate,
-            createdAt: item.createdAt,
+            portalId: item.portal._id,
+           
+            createdAt: getDateAsDDMMMYYYY(item.createdAt),
             createdId: item.createdId,
             createdBy: item.createdBy,
-            updatedAt: item.updatedAt,
+            updatedAt: getDateAsDDMMMYYYY(item.updatedAt),
             updatedId: item.updatedId,
             updatedBy: item.updatedBy,
             deletedId: item.deletedId,
@@ -109,19 +64,11 @@ export async function getAllOffers(req, res) {
         }))
         if (!result) return res.notFound({ message: "offer data not found" })
         const headers = [
-            { fieldName: "Offer Name", field: "offerName", filter: true},
-            { fieldName: "Offer Id", field: "offerId", filter: true },
-            { fieldName: "Portal Name", field: "networkPortalList.networkPortalName", filter: true },
-            { fieldName: "Advertiser Id", field: "network.network_advertiser_id", filter: true },
-            { fieldName: "Advertiser Name", field: "network.name", filter: true },
-            { fieldName: "Advertiser Name", field: "network.name", filter: true },
-            { fieldName: "Affiliate Id", field: "affiliate.network_affiliate_id", filter: true },
-            { fieldName: "Affiliate Name", field: "affiliate.name", filter: true },
-            { fieldName: "URL", field: "offerLink", filter: true },
-            { fieldName: "Payout", field: "payout", filter: true },
-            { fieldName: "Payment Term", field: "paymentType", filter: true },
-            { fieldName: "Created By", field: "createdBy", filter: true },
-            { fieldName: "Created At", field: "createdAt", filter: true },
+            { fieldName: "Offer Name", field: "offerName", filter: true },
+            { fieldName: "Portal Name", field: "portalName", filter: true },
+            { fieldName: "Network Name", field: "networkName", filter: true },
+            { fieldName: "Affiliate Name", field: "affiliateName", filter: true },
+            { fieldName: "Offer Link", field: "offerLink", filter: true },
         ]
         return res.success({ data: { headers, data }, message: "offer data get successfully" })
     } catch (error) {
