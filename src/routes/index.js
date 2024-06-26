@@ -1,6 +1,9 @@
 import { Router } from 'express';
 const router = Router();
 
+// Direct model 
+import PortalSchema from '../models/portal-platform/portal';
+
 // Import routes
 import adminConsole from './admin-console/domain-account';
 import menus from './campaign-journey/controls/menus';
