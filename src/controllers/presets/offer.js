@@ -1,24 +1,26 @@
+import { populate } from "dotenv";
 import OfferSchema from "../../models/presets/offer";
-import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition";
+import { create, findMany, findOne, updateOne, populate } from "../../services/db/mongo-db-definition";
 import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
+import PortalSchema from "../../models/portal-platform/portal";
 
 export async function addOfferDetails(req, res) {
     try {
         const addToData = { ...req.body.data, ...{ createdId: req.body.user.id, createdBy: req.body.user.name } };
-        
-        const {error} = addPoolValidator(req.body.data);
+
+        const { error } = addPoolValidator(req.body.data);
         if (error) { return res.validationError({ message: error.message }); }
 
-        const existing = await findOne(OfferSchema, {$and: [ { offerName: addToData.offerName }, {isDeleted: false}]});
+        const existing = await findOne(OfferSchema, { $and: [{ offerName: addToData.offerName }, { isDeleted: false }] });
+        const maxID = await OfferSchema.findOne().sort('-offerID').select('offerID');
+        let newOfferID = 1;
+        if (maxID && maxID.offerID) {
+            newOfferID = maxID.offerID + 1;
+        }
+        addToData.offerID = newOfferID;
         if (!existing) {
-            addToData.networkPortalList = JSON.stringify(addToData.networkPortalList);
-            addToData.network = JSON.stringify(addToData.network);
-            addToData.offer = JSON.stringify(addToData.offer);
-            addToData.affiliate = JSON.stringify(addToData.affiliate);
-
             const results = await create(OfferSchema, addToData)
             return res.success({ data: { insertedId: results._id }, message: "offer data added successfully" });
-
         } else {
             return res.found({ message: "offer already exist" });
         }
@@ -28,26 +30,100 @@ export async function addOfferDetails(req, res) {
     }
 }
 
+// export async function getAllOffers(req, res) {
+//     try {
+//         const result = await findMany(OfferSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+//         const data = result.map(item => ({
+//             offerName: item.offerName,
+//             offerLink: item.offerLink,
+//             personalUnsub: item.personalUnsub,
+//             networkUnsub: item.networkUnsub,
+//             verticalId: item.verticalId,
+//             subVerticalId: item.subVerticalId,
+//             method: item.method,
+//             associatedId: item.associatedId,
+//             portal: item.portal,
+//             network: item.network,
+//             offer: item.offer,
+//             affiliate: item.affiliate,
+//             createdAt: item.createdAt,
+//             createdId: item.createdId,
+//             createdBy: item.createdBy,
+//             updatedAt: item.updatedAt,
+//             updatedId: item.updatedId,
+//             updatedBy: item.updatedBy,
+//             deletedId: item.deletedId,
+//             deletedBy: item.deletedBy,
+//             isDeleted: item.isDeleted,
+//             isActive: item.isActive,
+//         }))
+//         if (!result) return res.notFound({ message: "offer data not found" })
+//         const headers = [
+//             { fieldName: "Offer Name", field: "offerName", filter: true},
+//             { fieldName: "Offer Id", field: "offerId", filter: true },
+//             { fieldName: "Portal Name", field: "networkPortalList.networkPortalName", filter: true },
+//             { fieldName: "Advertiser Id", field: "network.network_advertiser_id", filter: true },
+//             { fieldName: "Advertiser Name", field: "network.name", filter: true },
+//             { fieldName: "Advertiser Name", field: "network.name", filter: true },
+//             { fieldName: "Affiliate Id", field: "affiliate.network_affiliate_id", filter: true },
+//             { fieldName: "Affiliate Name", field: "affiliate.name", filter: true },
+//             { fieldName: "URL", field: "offerLink", filter: true },
+//             { fieldName: "Payout", field: "payout", filter: true },
+//             { fieldName: "Payment Term", field: "paymentType", filter: true },
+//             { fieldName: "Created By", field: "createdBy", filter: true },
+//             { fieldName: "Created At", field: "createdAt", filter: true },
+//         ]
+//         return res.success({ data: { headers, data }, message: "offer data get successfully" })
+//     } catch (error) {
+//         console.error(error);
+//         return res.internalServerError();
+//     }
+// }
+
 export async function getAllOffers(req, res) {
     try {
-        const result = await findMany(OfferSchema, {}, {}, { sort: { createdAt: -1 } });
+        const result = await populate(OfferSchema, { isDeleted: false }, {}, "portal");
+        const data = result.map(item => ({
+            offerName: item.offerName,
+            offerLink: item.offerLink,
+            personalUnsub: item.personalUnsub,
+            networkUnsub: item.networkUnsub,
+            verticalId: item.verticalId,
+            subVerticalId: item.subVerticalId,
+            method: item.method,
+            associatedId: item.associatedId,
+            portal: item.portal,
+            network: item.network,
+            offer: item.offer,
+            affiliate: item.affiliate,
+            createdAt: item.createdAt,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            updatedAt: item.updatedAt,
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
+            deletedId: item.deletedId,
+            deletedBy: item.deletedBy,
+            isDeleted: item.isDeleted,
+            isActive: item.isActive,
+        }))
         if (!result) return res.notFound({ message: "offer data not found" })
         const headers = [
-    {fieldName: "Offer Name", field:"offerName", filter:true, pinned: "left", width:"400" },
-    {fieldName: "Offer Id", field:"offerId"},
-    {fieldName: "Portal Name", field:"networkPortalList.networkPortalName"},
-    {fieldName: "Advertiser Id", field:"network.network_advertiser_id"},
-    {fieldName: "Advertiser Name", field:"network.name"},
-    {fieldName: "Advertiser Name", field:"network.name"},
-    {fieldName: "Affiliate Id", field:"affiliate.network_affiliate_id"},
-    {fieldName: "Affiliate Name", field:"affiliate.name"},
-    {fieldName: "URL", field:"offerLink"},
-    {fieldName: "Payout", field:"payout"},
-    {fieldName: "Payment Term", field:"paymentType"},
-    {fieldName: "Created By", field:"createdBy"},
-    {fieldName: "Created At", field:"createdAt"},
+            { fieldName: "Offer Name", field: "offerName", filter: true},
+            { fieldName: "Offer Id", field: "offerId", filter: true },
+            { fieldName: "Portal Name", field: "networkPortalList.networkPortalName", filter: true },
+            { fieldName: "Advertiser Id", field: "network.network_advertiser_id", filter: true },
+            { fieldName: "Advertiser Name", field: "network.name", filter: true },
+            { fieldName: "Advertiser Name", field: "network.name", filter: true },
+            { fieldName: "Affiliate Id", field: "affiliate.network_affiliate_id", filter: true },
+            { fieldName: "Affiliate Name", field: "affiliate.name", filter: true },
+            { fieldName: "URL", field: "offerLink", filter: true },
+            { fieldName: "Payout", field: "payout", filter: true },
+            { fieldName: "Payment Term", field: "paymentType", filter: true },
+            { fieldName: "Created By", field: "createdBy", filter: true },
+            { fieldName: "Created At", field: "createdAt", filter: true },
         ]
-        return res.success({ data: result, message: "offer data get successfully" })
+        return res.success({ data: { headers, data }, message: "offer data get successfully" })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
@@ -70,16 +146,9 @@ export async function updateOfferDetails(req, res) {
     try {
         const { id } = req.params;
         const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
-        
-        const {error} = updatePoolValidator(req.body.data);
-        if (error) { return res.validationError({ message: error.message }); }
 
-        if (updateToData) {
-            updateToData.networkPortalList = JSON.stringify(updateToData.networkPortalList);
-            updateToData.network = JSON.stringify(updateToData.network);
-            updateToData.offer = JSON.stringify(updateToData.offer);
-            updateToData.affiliate = JSON.stringify(updateToData.affiliate);
-        }
+        const { error } = updatePoolValidator(req.body.data);
+        if (error) { return res.validationError({ message: error.message }); }
         const result = await updateOne(OfferSchema, { _id: id }, updateToData);
         if (!result) {
             return res.notFound("offer data not found")
