@@ -6,8 +6,7 @@ const commonSchema = joi.object({
     countryId: joi.number().integer().optional().error(new Error("Country Id must be an integer")),
     countryName: joi.string().optional().error(new Error("Country Name must be an String and not empty")),
     trackierId: joi.number().integer().optional().error(new Error("Trackier Id must be an integer")),
-    portalId: joi.number().integer().required().error(new Error("Prtal Id must be an integer and it is requored")),
-    portalName: joi.string().trim().required().error(new Error("Portal Name is  not allowed to be empty and it must be a string")),
+    portal: joi.string().required().error(new Error("Prtal Id must be an integer and it is requored")),
     isActive: joi.boolean().required().error(new Error("Is Active must be an boolean and it is required")),
     isDeleted: joi.boolean().required().error(new Error("Is Deleted must be an boolean and it is required")),
 })
