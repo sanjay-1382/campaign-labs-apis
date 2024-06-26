@@ -5,7 +5,8 @@ import {
     addHeaderkDetails,
     getAllHeaderkDetails,
     updateHeaderkDetails,
-    activeInactiveHeaders
+    activeInactiveHeaders,
+    deleteHeaders
 } from "../../controllers/presets/header";
 
 // Error handling middleware
@@ -19,6 +20,6 @@ router.route("/preset/header/create").post(addHeaderkDetails);
 router.route("/preset/header/details").get(getAllHeaderkDetails);
 router.route("/preset/header/edit/:id").put(updateHeaderkDetails);
 router.route("/preset/header/active-inactive/:id").put(activeInactiveHeaders);
-router.route("/preset/header/delete/:id").delete(activeInactiveHeaders);
+router.route("/preset/header/delete/:id").delete(deleteHeaders);
 
 export default router;

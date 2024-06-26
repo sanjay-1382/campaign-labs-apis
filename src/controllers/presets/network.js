@@ -1,36 +1,50 @@
 import NetworkSchema from '../../models/presets/network';
 import { create, updateOne, findMany, findOne } from '../../services/db/mongo-db-definition'
+import { addNetworkValidation ,updateNetworkValidation } from '../../utils/validations/joi/network';
+import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addNetworkDetails = async (req, res) => {
-    const dataToCreate = req.body;
     try {
-        try {
-            const result = await create(NetworkSchema, dataToCreate);
-            res.success({ data: result })
-        } catch (error) {
-            console.error("Error inserting data: ", error);
-            return res.found({ message: `Affiliates Name already exist` })
+        const { data, user } = req.body;
+        const dataToCreate = { ...data, createdId: user.id, createdBy: user.name }
+        const { error } = addNetworkValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
+        const found = await findOne(NetworkSchema, { $and: [{ networkName: dataToCreate.networkName }, { isDeleted: 'false' }] });
+        if (found) {
+            return res.found({ message: "Network Name already exist" });
         }
+        const maxID = await NetworkSchema.findOne().sort('-networkId').select('networkId');
+        let newNetworkId = 1;
+        if (maxID && maxID.networkId) {
+            newNetworkId = maxID.networkId + 1;
+        }
+        dataToCreate.networkId = newNetworkId;
+        const result = await create(NetworkSchema, dataToCreate);
+        res.success({ data: result });
     } catch (error) {
+        console.log(error);
         return res.internalServerError();
     }
 }
 
 export const getAllNetworkDetails = async (req, res) => {
-    const id = { isDeleted: false };
     try {
-        const data = await findMany(NetworkSchema, id, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(NetworkSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const data = result.map((item)=>({
+            ...item._doc,
+            createdAt:getDateAsDDMMMYYYY(item.createdAt),
+            updatedAt:getDateAsDDMMMYYYY(item.updatedAt) 
+        }))
         const headers = [
-            { headerName: "Portal Name", field: "portalName", filter: true, pinned: 'left', width: 400 },
-            { headerName: "Prtal Id", field: "prtalId", filter: true },
-            { headerName: "Affiliates Id", field: "affiliatesId", filter: true },
-            { headerName: "Affiliates Name", field: "affiliatesName", filter: true },
-            { headerName: "Advertiser Id", field: "advertiserId", filter: true },
-            { headerName: "Advertiser Name", field: "advertiserName", filter: true },
-            { headerName: "Created Id", field: "createdId", filter: true },
+            { headerName: "Network Id", field: "networkId", filter: true, pinned: 'left', width: 300 },
+            { headerName: "Network Name", field: "networkName", filter: true },
+            { headerName: "Portal Id", field: "portalId", filter: true },
+            { headerName: "Portal Name", field: "portalName", filter: true },
             { headerName: "Created By", field: "createdBy", filter: true },
-            { headerName: "Is Deleted", field: "isDeleted", filter: true },
+            { headerName: "Updated By", field: "updatedBy", filter: true },
+            { headerName: "Deleted By", field: "deletedBy", filter: true },
             { headerName: "Is Active", field: "isActive", filter: true },
+            { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Updated At", field: "updatedAt", filter: true },
         ];
@@ -42,14 +56,17 @@ export const getAllNetworkDetails = async (req, res) => {
 }
 
 export const updateNetworkDetails = async (req, res) => {
-    const id = req.params.id;
-    const updateData = req.body;
     try {
-        const found = await findOne(NetworkSchema, { affiliatesName: updateData.affiliatesName });
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name }
+        const { error } = updateNetworkValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
+        const found = await findOne(NetworkSchema, { networkName: dataToUpdate.networkName });
         if (found) {
-            return res.found({ message: "Header Name already exist" });
+            return res.found({ message: "Network Name already exist" });
         }
-        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': updateData });
+        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': dataToUpdate });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
@@ -58,10 +75,13 @@ export const updateNetworkDetails = async (req, res) => {
 }
 
 export const activeInactiveHeaders = async (req, res) => {
-    const id = req.params.id;
-    const updateData = req.body;
     try {
-        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': updateData });
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name }
+        const { error } = updateNetworkValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
+        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': dataToUpdate });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
