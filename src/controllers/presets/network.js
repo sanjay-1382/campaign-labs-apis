@@ -6,7 +6,6 @@ import { getDateAsDDMMMYYYY } from '../../utils/utility';
 export const addNetworkDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
-        console.log(data);
         const dataToCreate = { ...data, createdId: user.id, createdBy: user.name }
         const { error } = addNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
