@@ -1,9 +1,6 @@
 import { Router } from 'express';
 const router = Router();
 
-// Direct model 
-import PortalSchema from '../models/portal-platform/portal';
-
 // Import routes
 import adminConsole from './admin-console/domain-account';
 import menus from './campaign-journey/controls/menus';
@@ -14,6 +11,7 @@ import footer from './presets/footer'
 import pool from './presets/pool';
 import everflow from './portal-platform/everflow';
 import template from './presets/template';
+import portal from './portal-platform/portal';
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
@@ -28,7 +26,8 @@ const routes = [
     headers,
     footer,
     everflow,
-    template
+    template,
+    portal
 ];
 
 // Use forEach to apply routes
