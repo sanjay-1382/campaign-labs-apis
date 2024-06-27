@@ -1,5 +1,6 @@
 import TemplateSchema from "../../models/presets/template"
-import { create, findMany, findOne, updateOne } from "../../services/db/mongo-db-definition"
+import { create, findMany, findMaxValue, findOne, updateOne } from "../../services/db/mongo-db-definition"
+import { getDateAsDDMMMYYYY } from "../../utils/utility"
 import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/template"
 
 export async function addTemplateDetails(req, res) {
@@ -11,9 +12,9 @@ export async function addTemplateDetails(req, res) {
         const existing = await findOne(TemplateSchema, { $and: [{ templateName: addToData.templateName }, { isDeleted: false }] });
         if (existing) return res.found({ message: "template name already exist" });
 
-        const maxId = await findMaxValue(TemplateSchema, {}, { sort: { templateId: -1 } });
+        const maxId = await findMaxValue(TemplateSchema, {}, {}, { sort: { templateId: -1 } });
         let newTemplateId = 1;
-        if (maxId[0].templateId) {
+        if (maxId[0]?.templateId) {
             newTemplateId = maxId[0].templateId + 1;
         }
         addToData.templateId = newTemplateId;
@@ -27,7 +28,7 @@ export async function addTemplateDetails(req, res) {
 
 export async function getAllTemplates(req, res) {
     try {
-        const result = await findMany(TemplateSchema, { isDeleted: false }, { sort: { createdAt: -1 } });
+        const result = await findMany(TemplateSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         if (!result) return res.notFound({ message: "template data not found" });
 
         const data = result.map(item => ({
@@ -40,10 +41,10 @@ export async function getAllTemplates(req, res) {
             associatedId: item.associatedId,
             journeyId: item.journeyId,
             templateType: item.templateType,
-            createdAt: item.createdAt,
+            createdAt: getDateAsDDMMMYYYY(item.createdAt),
             createdId: item.createdId,
             createdBy: item.createdBy,
-            updatedAt: item.updatedAt,
+            updatedAt: getDateAsDDMMMYYYY(item.updatedAt),
             updatedId: item.updatedId,
             updatedBy: item.updatedBy,
             deletedId: item.deletedId,
@@ -53,7 +54,7 @@ export async function getAllTemplates(req, res) {
         }))
 
         const headers = [
-            { fieldName: "Template ID", field: "templateId", filter: true },
+            { fieldName: "Template Id", field: "templateId", filter: true },
             { fieldName: "Template Name", field: "templateName", filter: true },
             { fieldName: "Template Html", field: "templateHtml", filter: true },
             { fieldName: "Template Text", field: "templateText", filter: true },
@@ -62,7 +63,7 @@ export async function getAllTemplates(req, res) {
             { fieldName: "Created At", field: "createdAt", filter: true },
         ]
 
-        return res.success({ data: { headers, data }, message: "template data get successfully" });
+        return res.success({ data: { headers, data } });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -75,7 +76,7 @@ export async function getTemplateById(req, res) {
         if (!id) return res.notFound({ message: "template id required" });
         const result = await findOne(TemplateSchema, { _id: id, isDeleted: false });
         if (!result) return res.notFound({ message: "template data not found" });
-        return res.success({ data: result, message: "template data get successfully" });
+        return res.success({ data: result });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -93,7 +94,7 @@ export async function updateTemplateDetails(req, res) {
 
         const existing = await updateOne(TemplateSchema, { _id: id, isDeleted: false }, updateToData);
         if (!existing) return res.notFound({ message: "template data not found" })
-        return res.success({ data: { updatedId: existing._id }, message: "template data updated successfully" })
+        return res.success({ data: existing })
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -103,10 +104,13 @@ export async function updateTemplateDetails(req, res) {
 export async function activeInactiveTemplateDetails(req, res) {
     try {
         const { id } = req.params;
+        const updateToData = { updatedId: req.body.user.id, updatedBy: req.body.user.name }
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "template data not found" });
 
         existing.isActive === true ? existing.isActive = false : existing.isActive = true;
+        existing.updatedId = updateToData.updatedId;
+        existing.updatedBy = updateToData.updatedBy;
 
         const result = await updateOne(TemplateSchema, { _id: id }, existing)
         return res.success({ data: result })
@@ -119,11 +123,15 @@ export async function activeInactiveTemplateDetails(req, res) {
 export async function softDeleteTemplateDetails(req, res) {
     try {
         const { id } = req.params;
+        const deleteToData = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
+
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "template data not found" });
         if (existing.isActive === true) return res.failure({ message: "please in-active template, before delete" });
 
         existing.isDeleted = true;
+        existing.deletedId = deleteToData.deletedId;
+        existing.deletedBy = deleteToData.deletedBy;
 
         const result = await updateOne(TemplateSchema, { _id: id }, existing)
         return res.success({ data: result })
