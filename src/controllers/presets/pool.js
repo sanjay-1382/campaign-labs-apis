@@ -1,6 +1,6 @@
 import PoolSchema from "../../models/presets/pool";
 import { findOne, create, findMany } from "../../services/db/mongo-db-definition";
-import { addPoolValidator } from '../../utils/validations/joi/pool';
+import { addPoolValidator } from '../../utils/validations/joi/presets/pool';
 
 export const addPoolDetails = async (req, res) => {
     try {

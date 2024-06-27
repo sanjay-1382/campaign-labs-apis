@@ -76,8 +76,8 @@ export const aggregate = (model, filter = {}, options = {}) => {
 }
 
 // Populate documents
-export const populate = (model, filter = {}, options = {}, aggregateKey = {}) => {
-    return model.find(filter, options,).populate(aggregateKey)
+export const populate = (model, filter = {}, options = {}, aggregateKey = {}, sortValue = {}) => {
+    return model.find(filter, options, sortValue).populate(aggregateKey)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }

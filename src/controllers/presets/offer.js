@@ -1,6 +1,6 @@
 import OfferSchema from "../../models/presets/offer";
 import { create, findMaxValue, findOne, populate, updateOne } from "../../services/db/mongo-db-definition";
-import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/presets/offer";
 import { getDateAsDDMMMYYYY } from "../../utils/utility";
 
 export async function addOfferDetails(req, res) {

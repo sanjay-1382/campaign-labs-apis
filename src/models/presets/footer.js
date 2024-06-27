@@ -1,23 +1,28 @@
 import { Schema, model } from "mongoose";
 
-const footerDetails = new Schema({
+const footerDetailsSchema = new Schema({
     footerName: { type: String, required: true, trim: true },
     footerMessage: { type: String, required: true },
     associtedId: { type: Number, default: null },
-    createdAt:  Date ,
-    createdId:  Number ,
-    createdBy:  String ,
-    updatedAt:  Date ,
-    updatedId:  Number ,
-    updatedBy:  String ,
-    deletedId:  Number ,
-    deletedBy:  String ,
+    createdId: Number,
+    createdBy: String,
+    createdAt: Date,
+    updatedId: Number,
+    updatedBy: String,
+    updatedAt: Date,
+    deletedId: Number,
+    deletedBy: String,
+    deletedAt: Date,
     isActive: { type: Boolean, default: true },
     isDeleted: { type: Boolean, default: false },
 }, {
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+    timestamps: {
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
+        deletedAt: 'deletedAt'
+    }
 });
 
-footerDetails.pre('save', async (next) => { next(); });
+footerDetailsSchema.pre('save', async (next) => { next(); });
 
-export default model("footerdetails", footerDetails); 
+export default model("footerdetails", footerDetailsSchema); 
