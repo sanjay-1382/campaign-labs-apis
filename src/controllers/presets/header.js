@@ -1,7 +1,7 @@
 
 import HeaderSchema from '../../models/presets/header'
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
-import { addHeaderValidation ,updateHeaderValidation} from '../../utils/validations/joi/header';
+import { addHeaderValidation ,updateHeaderValidation} from '../../utils/validations/joi/presets/header';
 import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addHeaderkDetails = async (req, res) => {

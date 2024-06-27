@@ -1,7 +1,7 @@
 import TemplateSchema from "../../models/presets/template"
 import { create, findMany, findMaxValue, findOne, updateOne } from "../../services/db/mongo-db-definition"
 import { getDateAsDDMMMYYYY } from "../../utils/utility"
-import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/template"
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/presets/template"
 
 export async function addTemplateDetails(req, res) {
     try {

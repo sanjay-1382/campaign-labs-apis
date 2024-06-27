@@ -1,6 +1,6 @@
 import NetworkSchema from '../../models/presets/network';
 import { create, updateOne, findMany, findOne, populate, findMaxValue } from '../../services/db/mongo-db-definition'
-import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/network';
+import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/presets/network';
 import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addNetworkDetails = async (req, res) => {
