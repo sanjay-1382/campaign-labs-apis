@@ -137,15 +137,15 @@ export const activeInactiveTemplateDetails = async (req, res) => {
 export const softDeleteTemplateDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteToData = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
+        const dataToDelete = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
 
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "Template data not found" });
         if (existing.isActive === true) return res.failure({ message: "Please in-active template, before delete" });
 
         existing.isDeleted = true;
-        existing.deletedId = deleteToData.deletedId;
-        existing.deletedBy = deleteToData.deletedBy;
+        existing.deletedId = dataToDelete.deletedId;
+        existing.deletedBy = dataToDelete.deletedBy;
 
         const result = await updateOne(TemplateSchema, { _id: id }, existing)
         return res.success({ data: result })
