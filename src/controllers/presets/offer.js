@@ -1,6 +1,6 @@
 import OfferSchema from "../../models/presets/offer";
 import { create, findMaxValue, findOne, findMany, populate, updateOne } from "../../services/db/mongo-db-definition";
-import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/presets/offer";
 import moment from "moment";
 
 export const addOfferDetails = async (req, res) => {

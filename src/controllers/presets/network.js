@@ -3,7 +3,6 @@ import { create, updateOne, findOne, populate, findMaxValue } from '../../servic
 import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/presets/network';
 import moment from 'moment';
 
-
 export const addNetworkDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
@@ -11,7 +10,7 @@ export const addNetworkDetails = async (req, res) => {
         const { error } = addNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
         const existing = await findOne(NetworkSchema, { $and: [{ networkName: dataToCreate.networkName }, { isDeleted: 'false' }] });
-        if (existing) { return res.found({ message: "Network Name already exist" }); }
+        if (existing) { return res.found({ message: "Network name already exist" }); }
         const maxId = await findMaxValue(NetworkSchema, {}, { sort: { networkId: -1 } });
         let newNetworkId = 1;
         if (maxId[0]?.networkId) { newNetworkId = maxId[0].networkId + 1; }
@@ -38,10 +37,10 @@ export const getAllNetworkDetails = async (req, res) => {
             portalName: item.portal.portalName,
             createdId: item.createdId,
             createdBy: item.createdBy,
-            createdAt: moment.utc(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
+            createdAt: moment(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
             updatedId: item.updatedId,
             updatedBy: item.updatedBy,
-            updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            updatedAt: moment(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
             deletedId: item.deletedId,
             deletedBy: item.deletedBy,
             isActive: item.isActive,
@@ -56,7 +55,7 @@ export const getAllNetworkDetails = async (req, res) => {
             { headerName: "Created By", field: "createdBy", filter: true },
             { headerName: "Updated By", field: "updatedBy", filter: true },
             { headerName: "Deleted By", field: "deletedBy", filter: true },
-            { headerName: "Is Active", field: "isActive", filter: true },
+            { headerName: "Status", field: "isActive", filter: true },
             { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Updated At", field: "updatedAt", filter: true },
@@ -77,7 +76,7 @@ export const updateNetworkDetails = async (req, res) => {
         if (error) { return res.validationError({ message: error.message }); }
         const existing = await findOne(NetworkSchema, { $and: [{ networkName: dataToUpdate.networkName }, { isDeleted: 'false' }] });
         if (existing) {
-            return res.found({ message: "Network Name already exist" });
+            return res.found({ message: "Network name already exist" });
         }
         const result = await updateOne(NetworkSchema, query, dataToUpdate);
         res.success({ data: result })

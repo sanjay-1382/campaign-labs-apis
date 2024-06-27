@@ -1,4 +1,3 @@
-
 import HeaderSchema from '../../models/presets/header'
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
 import { addHeaderValidation, updateHeaderValidation } from '../../utils/validations/joi/presets/header';
@@ -12,7 +11,7 @@ export const addHeaderkDetails = async (req, res) => {
         if (error) { return res.validationError({ message: error.message }) };
         const existing = await findOne(HeaderSchema, { $and: [{ headerName: dataToCreate.headerName }, { isDeleted: 'false' }] });
         if (existing) {
-            return res.found({ message: "Header Name already exist" });
+            return res.found({ message: "Header name already exist" });
         }
         const result = await create(HeaderSchema, dataToCreate);
         res.success({ data: result });
@@ -31,26 +30,26 @@ export const getAllHeaderkDetails = async (req, res) => {
             associtedId: item.associtedId,
             createdId: item.createdId,
             createdBy: item.createdBy,
-            createdAt: moment.utc(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
+            createdAt: moment(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
             updatedId: item.updatedId,
             updatedBy: item.updatedBy,
-            updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            updatedAt: moment(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
             deletedId: item.deletedId,
             deletedBy: item.deletedBy,
             isActive: item.isActive,
             isDeleted: item.isDeleted,
         }))
         const header = [
-            { headerName: "Header Name", field: "headerName", filter: true, },
-            { headerName: "Header Message", field: "headerMessage", filter: true },
+            { headerName: "Name", field: "headerName", filter: true, },
+            { headerName: "Message", field: "headerMessage", filter: true },
             { headerName: "Associted Id", field: "associtedId", filter: true },
+            { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Created By", field: "createdBy", filter: true },
+            { headerName: "Updated At", field: "updatedAt", filter: true },
             { headerName: "Updated By", field: "updatedBy", filter: true },
             { headerName: "Deleted By", field: "deletedBy", filter: true },
-            { headerName: "Is Active", field: "isActive", filter: true },
-            { headerName: "Is Deleted", field: "isDeleted", filter: true },
-            { headerName: "Created At", field: "createdAt", filter: true },
-            { headerName: "Updated At", field: "updatedAt", filter: true },
+            { headerName: "Status", field: "isActive", filter: true },
+            // { headerName: "Is Deleted", field: "isDeleted", filter: true },
         ]
         res.success({ data: { header, data } })
     } catch (error) {
