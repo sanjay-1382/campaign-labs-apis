@@ -44,7 +44,6 @@ export const getAllNetworkDetails = async (req, res) => {
             updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
             deletedId: item.deletedId,
             deletedBy: item.deletedBy,
-            deletedAt: moment.utc(item.deletedAt).format('DD MMMM YYYY, HH:mm:ss'),
             isActive: item.isActive,
             isDeleted: item.isDeleted,
         }))
