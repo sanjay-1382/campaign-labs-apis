@@ -29,10 +29,10 @@ export const getAllFooterDetails = async (req, res) => {
             associtedId: item.associtedId,
             createdId: item.createdId,
             createdBy: item.createdBy,
-            createdAt: moment.utc(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
+            createdAt: moment(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
             updatedId: item.updatedId,
             updatedBy: item.updatedBy,
-            updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            updatedAt: moment(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
             deletedId: item.deletedId,
             deletedBy: item.deletedBy,
             isActive: item.isActive,
@@ -45,7 +45,7 @@ export const getAllFooterDetails = async (req, res) => {
             { headerName: "Created By", field: "createdBy", filter: true },
             { headerName: "Updated By", field: "updatedBy", filter: true },
             { headerName: "Deleted By", field: "deletedBy", filter: true },
-            { headerName: "Is Active", field: "isActive", filter: true },
+            { headerName: "Status", field: "isActive", filter: true },
             { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Updated At", field: "updatedAt", filter: true },
@@ -86,7 +86,6 @@ export const activeInactiveFooterDetails = async (req, res) => {
         return res.internalServerError();
     }
 }
-
 
 export const deleteFooterDetails = async (req, res) => {
     try {

@@ -1,6 +1,6 @@
 import TemplateSchema from "../../models/presets/template";
 import { create, findMany, findMaxValue, findOne, updateOne } from "../../services/db/mongo-db-definition";
-import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/template";
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/presets/template";
 import moment from "moment";
 
 export const addTemplateDetails = async (req, res) => {
