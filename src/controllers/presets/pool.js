@@ -1,6 +1,6 @@
 import PoolSchema from "../../models/presets/pool";
 import { findOne, create, findMany } from "../../services/db/mongo-db-definition";
-import { addPoolValidator } from '../../utils/validations/joi/pool';
+import { addPoolValidator } from '../../utils/validations/joi/presets/pool';
 
 export const addPoolDetails = async (req, res) => {
     try {
@@ -19,7 +19,7 @@ export const addPoolDetails = async (req, res) => {
 
 export async function getAllPoolDetails(req, res) {
     try {
-        const result = await findMany(PoolSchema, {}, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(PoolSchema, {}, { sort: { createdAt: -1 } });
         return res.success({ data: result });
     } catch (error) {
         console.error(error);

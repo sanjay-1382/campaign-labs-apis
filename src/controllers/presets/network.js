@@ -1,6 +1,6 @@
 import NetworkSchema from '../../models/presets/network';
-import { create, updateOne, findMany, findOne, populate } from '../../services/db/mongo-db-definition'
-import { addNetworkValidation, updateNetworkValidation, activeInactiveNetworkValidation, deleteNetworkValidation } from '../../utils/validations/joi/network';
+import { create, updateOne, findMany, findOne, populate, findMaxValue } from '../../services/db/mongo-db-definition'
+import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/presets/network';
 import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addNetworkDetails = async (req, res) => {
@@ -10,14 +10,10 @@ export const addNetworkDetails = async (req, res) => {
         const { error } = addNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
         const found = await findOne(NetworkSchema, { $and: [{ networkName: dataToCreate.networkName }, { isDeleted: 'false' }] });
-        if (found) {
-            return res.found({ message: "Network Name already exist" });
-        }
-        const maxID = await NetworkSchema.findOne().sort('-networkId').select('networkId');
+        if (found) { return res.found({ message: "Network Name already exist" }); }
+        const maxId = await findMaxValue(NetworkSchema, {}, { sort: { networkId: -1 } });
         let newNetworkId = 1;
-        if (maxID && maxID.networkId) {
-            newNetworkId = maxID.networkId + 1;
-        }
+        if (maxId[0]?.networkId) { newNetworkId = maxId[0].networkId + 1; }
         dataToCreate.networkId = newNetworkId;
         const result = await create(NetworkSchema, dataToCreate);
         res.success({ data: result });
@@ -29,9 +25,7 @@ export const addNetworkDetails = async (req, res) => {
 
 export const getAllNetworkDetails = async (req, res) => {
     try {
-        // const result = await findMany(NetworkSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
-        const result = await populate(NetworkSchema, { isDeleted: false }, {}, 'portal', { sort: { createdAt: -1 } });
-        // console.log(result);
+        const result = await populate(NetworkSchema, {}, 'portal');
         const data = result.map((item) => ({
             _id: item._id,
             associatedId: item.associatedId,

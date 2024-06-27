@@ -1,8 +1,7 @@
 import FooterSchema from '../../models/presets/footer';
-
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
-import { addFooterValidation, updateFooterValidation } from '../../utils/validations/joi/footer';
-import { getDateAsDDMMMYYYY } from '../../utils/utility';
+import { addFooterValidation, updateFooterValidation } from '../../utils/validations/joi/presets/footer';
+import moment from 'moment';
 
 export const addFooterDetails = async (req, res) => {
     try {
@@ -10,10 +9,8 @@ export const addFooterDetails = async (req, res) => {
         const dataToCreate = { ...data, createdId: user.id, createdBy: user.name };
         const { error } = addFooterValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
-        const found = await findOne(FooterSchema, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
-        if (found) {
-            return res.found({ message: "Footer Name already exist" });
-        }
+        const existing = await findOne(FooterSchema, { $and: [{ footerName: dataToCreate.footerName }, { isDeleted: 'false' }] });
+        if (existing) { return res.found({ message: "Footer Name already exist" }); }
         const result = await create(FooterSchema, dataToCreate);
         res.success({ data: result });
     } catch (error) {
@@ -26,10 +23,22 @@ export const getAllFooterDetails = async (req, res) => {
     try {
         const result = await findMany(FooterSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         const data = result.map((item) => ({
-            ...item._doc,
-            createdAt: getDateAsDDMMMYYYY(item.createdAt),
-            updatedAt: getDateAsDDMMMYYYY(item.updatedAt)
-        }))
+            _id: item._id,
+            footerName: item.footerName,
+            footerMessage: item.footerMessage,
+            associtedId: item.associtedId,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            createdAt: moment.utc(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
+            updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            deletedId: item.deletedId,
+            deletedBy: item.deletedBy,
+            deletedAt: moment.utc(item.deletedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            isActive: item.isActive,
+            isDeleted: item.isDeleted,
+        }));
         const header = [
             { headerName: "Footer Name", field: "footerName", filter: true, },
             { headerName: "Footer Message", field: "footerMessage", filter: true },
@@ -42,7 +51,7 @@ export const getAllFooterDetails = async (req, res) => {
             { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Updated At", field: "updatedAt", filter: true },
         ]
-        res.success({ data: { header, data } })
+        res.success({ data: { data, header } });
     } catch (error) {
         console.log(error);
         return res.internalServerError();
@@ -51,16 +60,14 @@ export const getAllFooterDetails = async (req, res) => {
 
 export const updateFooterDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
         const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name };
         const { error } = updateFooterValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
-        const found = await findOne(FooterSchema, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
-        if (found) {
-            return res.found({ message: "Footer Name already exist" });
-        }
-        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToUpdate });
+        const existing = await findOne(FooterSchema, { $and: [{ footerName: dataToUpdate.footerName }, { isDeleted: 'false' }] });
+        if (existing) { return res.found({ message: "Footer Name already exist" }); }
+        const result = await updateOne(FooterSchema, query, dataToUpdate);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -68,14 +75,12 @@ export const updateFooterDetails = async (req, res) => {
     }
 }
 
-export const activeInactiveFooter = async (req, res) => {
+export const activeInactiveFooterDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
         const dataToActiveInactive = { ...data, updatedId: user.id, updatedBy: user.name };
-        const { error } = updateFooterValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
-        const result = await updateOne(FooterSchema, { '_id': id }, { '$set': dataToActiveInactive });
+        const result = await updateOne(FooterSchema, query, dataToActiveInactive);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
@@ -89,8 +94,6 @@ export const deleteFooterDetails = async (req, res) => {
         const id = req?.params?.id;
         const { data, user } = req.body;
         const dataToDelete = { ...data, deletedId: user.id, deletedBy: user.name };
-        const { error } = updateFooterValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
         const result = await updateOne(FooterSchema, { _id: id }, { '$set': dataToDelete });
         res.success({ data: result });
     } catch (error) {

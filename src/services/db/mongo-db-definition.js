@@ -41,14 +41,14 @@ export const findMaxValue = (model, filter = {}, options = {}, sortValue = {}) =
 }
 
 // Update single document and return updated document
-export const updateOne = (model, filter = {}, data, options = { new: true }) => {
+export const updateOne = (model, filter = {}, data = {}, options = { new: true }) => {
     return model.findOneAndUpdate(filter, data, options)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
 // Update multiple documents and return modified count
-export const updateMany = (model, filter = {}, data) => {
+export const updateMany = (model, filter = {}, data = {}) => {
     return model.updateMany(filter, data)
         .then(result => { return result; })
         .catch(error => { throw error; });
@@ -76,8 +76,8 @@ export const aggregate = (model, filter = {}, options = {}) => {
 }
 
 // Populate documents
-export const populate = (model, filter = {}, options = {}, aggregateKey = {}) => {
-    return model.find(filter, options,).populate(aggregateKey)
+export const populate = (model, filter = {}, options = {}, aggregateKey = {}, sortValue = {}) => {
+    return model.find(filter, options, sortValue).populate(aggregateKey)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }

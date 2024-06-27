@@ -1,6 +1,6 @@
 import OfferSchema from "../../models/presets/offer";
-import { create, findOne, populate, updateOne } from "../../services/db/mongo-db-definition";
-import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/offer";
+import { create, findMaxValue, findOne, populate, updateOne } from "../../services/db/mongo-db-definition";
+import { addPoolValidator, updatePoolValidator } from "../../utils/validations/joi/presets/offer";
 import { getDateAsDDMMMYYYY } from "../../utils/utility";
 
 export async function addOfferDetails(req, res) {
@@ -11,15 +11,13 @@ export async function addOfferDetails(req, res) {
         if (error) { return res.validationError({ message: error.message }); }
 
         const existing = await findOne(OfferSchema, { $and: [{ offerName: addToData.offerName }, { isDeleted: false }] });
-        const maxID = await OfferSchema.findOne().sort('-offerID').select('offerID');
-        let newOfferID = 1;
-        if (maxID && maxID.offerID) {
-            newOfferID = maxID.offerID + 1;
-        }
-        addToData.offerID = newOfferID;
+        const maxId = await findMaxValue(OfferSchema, {}, {}, { sort: { offerId: -1 } });
+        let newOfferId = 1;
+        if (maxId[0]?.offerId) { newOfferId = maxId[0].offerId + 1; }
+        addToData.offerId = newOfferId;
         if (!existing) {
             const results = await create(OfferSchema, addToData)
-            return res.success({ data: { insertedId: results._id }, message: "offer data added successfully" });
+            return res.success({ data: results });
         } else {
             return res.found({ message: "offer already exist" });
         }
@@ -31,11 +29,11 @@ export async function addOfferDetails(req, res) {
 
 export async function getAllOffers(req, res) {
     try {
-        const result = await populate(OfferSchema, { isDeleted: false }, {}, "portal network offer affiliate");
+        const result = await populate(OfferSchema, { isDeleted: false}, {}, "portal network offer affiliate");
         const data = result.map(item => ({
             _id: item._id,
-            offerId: item.offer.network_offer_id,
-            offerName: item.offer.name,
+            offerId: item.offerId,
+            offerName: item.offerName,
             portalName: item.portal.portalName,
             networkId: item.network.network_advertiser_id,
             networkName: item.network.name,
@@ -50,7 +48,7 @@ export async function getAllOffers(req, res) {
             method: item.method,
             associatedId: item.associatedId,
             portalId: item.portal._id,
-           
+
             createdAt: getDateAsDDMMMYYYY(item.createdAt),
             createdId: item.createdId,
             createdBy: item.createdBy,
@@ -70,7 +68,7 @@ export async function getAllOffers(req, res) {
             { fieldName: "Affiliate Name", field: "affiliateName", filter: true },
             { fieldName: "Offer Link", field: "offerLink", filter: true },
         ]
-        return res.success({ data: { headers, data }, message: "offer data get successfully" })
+        return res.success({ data: { headers, data } })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
@@ -82,7 +80,7 @@ export async function getOfferById(req, res) {
         const { id } = req.params;
         const result = await findOne(OfferSchema, { _id: id });
         if (!result) { return res.notFound({ message: "offer data not found" }) }
-        return res.success({ data: result, message: "offer data get successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
@@ -100,30 +98,33 @@ export async function updateOfferDetails(req, res) {
         if (!result) {
             return res.notFound("offer data not found")
         }
-        return res.success({ data: { insertedId: result._id }, message: "offer details updated successfully" });
+        return res.success({ data: result });
     } catch (error) {
         console.error(error);
         return res.internalServerError();
     }
 }
 
-export async function activeInactiveDatabaseDetails(req, res) {
+export async function activeInactiveOfferDetails(req, res) {
     try {
         const { id } = req.params;
+        const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
         const existing = await findOne(OfferSchema, { _id: id });
         if (!existing) return res.notFound({ message: "offer data not found" });
 
         existing.isActive === true ? existing.isActive = false : existing.isActive = true;
+        existing.updatedId = updateToData.updatedId;
+        existing.updatedBy = updateToData.updatedBy;
 
         const result = await updateOne(OfferSchema, { _id: id }, existing)
-        return res.success({ data: { updatedId: result._id }, message: "offer active status updated successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError()
     }
 }
 
-export async function softDeleteDatabaseDetails(req, res) {
+export async function softDeleteOfferDetails(req, res) {
     try {
         const { id } = req.params;
         const deleteToData = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
@@ -136,7 +137,7 @@ export async function softDeleteDatabaseDetails(req, res) {
         existing.deletedBy = deleteToData.deletedBy;
 
         const result = await updateOne(OfferSchema, { _id: id }, existing)
-        return res.success({ data: { updatedId: result._id }, message: "offer data deleted successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError()
