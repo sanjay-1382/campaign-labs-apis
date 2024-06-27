@@ -11,7 +11,17 @@ const commonSchema = joi.object({
     isDeleted: joi.boolean().required().error(new Error("Is Deleted must be an boolean and it is required")),
 })
 
+const activeInactiveNetworkValidationSchema = joi.object({
+    isActive: joi.boolean().required().error(new Error("Is Active must be an boolean and it is required")),
+})
+
+const deleteNetworkValidationValidationSchema = joi.object({
+    isDeleted: joi.boolean().required().error(new Error("Is Active must be an boolean and it is required")),
+})
+
 const validator = (data, schema) => { return schema.validate(data) }
 
 export const addNetworkValidation = (data) => validator(data, commonSchema);
 export const updateNetworkValidation = (data) => validator(data, commonSchema);
+export const activeInactiveNetworkValidation = (data) => validator(data, activeInactiveNetworkValidationSchema);
+export const deleteNetworkValidation = (data) => validator(data, deleteNetworkValidationValidationSchema);

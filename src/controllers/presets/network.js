@@ -1,6 +1,6 @@
 import NetworkSchema from '../../models/presets/network';
 import { create, updateOne, findMany, findOne, populate } from '../../services/db/mongo-db-definition'
-import { addNetworkValidation, updateNetworkValidation } from '../../utils/validations/joi/network';
+import { addNetworkValidation, updateNetworkValidation, activeInactiveNetworkValidation, deleteNetworkValidation } from '../../utils/validations/joi/network';
 import { getDateAsDDMMMYYYY } from '../../utils/utility';
 
 export const addNetworkDetails = async (req, res) => {
@@ -30,7 +30,7 @@ export const addNetworkDetails = async (req, res) => {
 export const getAllNetworkDetails = async (req, res) => {
     try {
         // const result = await findMany(NetworkSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
-        const result = await populate(NetworkSchema, {}, {}, 'portal');
+        const result = await populate(NetworkSchema, { isDeleted: false }, {}, 'portal', { sort: { createdAt: -1 } });
         // console.log(result);
         const data = result.map((item) => ({
             _id: item._id,
@@ -43,6 +43,8 @@ export const getAllNetworkDetails = async (req, res) => {
             portalName: item.portal.portalName,
             createdId: item.createdId,
             createdBy: item.createdBy,
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
             isActive: item.isActive,
             isDeleted: item.isDeleted,
             createdAt: getDateAsDDMMMYYYY(item.createdAt),
@@ -76,7 +78,7 @@ export const updateNetworkDetails = async (req, res) => {
         const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name }
         const { error } = updateNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
-        const found = await findOne(NetworkSchema, { networkName: dataToUpdate.networkName });
+        const found = await findOne(NetworkSchema, { $and: [{ networkName: dataToUpdate.networkName }, { isDeleted: 'false' }] });
         if (found) {
             return res.found({ message: "Network Name already exist" });
         }
@@ -88,14 +90,29 @@ export const updateNetworkDetails = async (req, res) => {
     }
 }
 
-export const activeInactiveHeaders = async (req, res) => {
+export const activeInactiveNetwork = async (req, res) => {
     try {
         const id = req.params.id;
         const { data, user } = req.body;
         const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name }
-        const { error } = updateNetworkValidation(data);
+        const { error } = activeInactiveNetworkValidation(data);
         if (error) { return res.validationError({ message: error.message }); }
-        const result = await updateOne(NetworkSchema, { '_id': id }, { '$set': dataToUpdate });
+        const result = await updateOne(NetworkSchema, { _id: id }, { '$set': dataToUpdate });
+        res.success({ data: result })
+    } catch (error) {
+        console.log(error);
+        res.internalServerError();
+    }
+}
+
+export const deleteNetworkDetails = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { data, user } = req.body;
+        const dataToUpdate = { ...data, deletedId: user.id, deletedBy: user.name }
+        const { error } = deleteNetworkValidation(data);
+        if (error) { return res.validationError({ message: error.message }); }
+        const result = await updateOne(NetworkSchema, { _id: id }, { '$set': dataToUpdate });
         res.success({ data: result })
     } catch (error) {
         console.log(error);
