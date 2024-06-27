@@ -18,6 +18,7 @@ const templateSchema = new Schema(
         updatedBy: String,
         deletedId: Number,
         deletedBy: String,
+        deletedAt: Date,
         isDeleted: { type: Boolean, default: false },
         isActive: { type: Boolean, default: true },
     },

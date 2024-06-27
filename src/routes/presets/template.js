@@ -1,7 +1,7 @@
 import { Router } from 'express';
 const router = Router();
 
-import { addTemplateDetails, getAllTemplates, getTemplateById, updateTemplateDetails, activeInactiveTemplateDetails, softDeleteTemplateDetails } from '../../controllers/presets/template';
+import { addTemplateDetails, getAllTemplates, getTemplateById, updateTemplateDetails, activeInactiveTemplateDetails, softDeleteTemplateDetails, getTemplateList } from '../../controllers/presets/template';
 
 // Error handling middleware
 router.use((err, req, res, next) => {
@@ -12,6 +12,7 @@ router.use((err, req, res, next) => {
 
 router.route('/preset/template/create').post(addTemplateDetails);
 router.route('/preset/template/details').get(getAllTemplates);
+router.route('/preset/template/list-details').get(getTemplateList);
 router.route('/preset/template/find-one/:id').get(getTemplateById);
 router.route('/preset/template/update/:id').put(updateTemplateDetails);
 router.route('/preset/template/active-inactive/:id').put(activeInactiveTemplateDetails);
