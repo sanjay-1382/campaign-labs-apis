@@ -91,10 +91,10 @@ export const activeInactiveFooterDetails = async (req, res) => {
 
 export const deleteFooterDetails = async (req, res) => {
     try {
-        const id = req?.params?.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
         const dataToDelete = { ...data, deletedId: user.id, deletedBy: user.name };
-        const result = await updateOne(FooterSchema, { _id: id }, { '$set': dataToDelete });
+        const result = await updateOne(FooterSchema, query, dataToDelete);
         res.success({ data: result });
     } catch (error) {
         console.log(error);

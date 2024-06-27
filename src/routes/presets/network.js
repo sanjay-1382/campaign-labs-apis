@@ -5,7 +5,7 @@ import {
     addNetworkDetails,
     getAllNetworkDetails,
     updateNetworkDetails,
-    activeInactiveNetwork,
+    activeInactiveNetworkDetails,
     deleteNetworkDetails
 } from '../../controllers/presets/network'
 
@@ -19,7 +19,7 @@ router.use((err, req, res, next) => {
 router.route('/preset/network/create').post(addNetworkDetails);
 router.route('/preset/network/details').get(getAllNetworkDetails);
 router.route('/preset/network/update/:id').put(updateNetworkDetails);
-router.route('/preset/network/active-inactive/:id').put(activeInactiveNetwork);
+router.route('/preset/network/active-inactive/:id').put(activeInactiveNetworkDetails);
 router.route('/preset/network/delete/:id').delete(deleteNetworkDetails);
 
 export default router;
