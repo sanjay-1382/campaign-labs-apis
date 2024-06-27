@@ -144,14 +144,14 @@ export const activeInactiveOfferDetails = async (req, res) => {
 export const softDeleteOfferDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        const deleteToData = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
+        const dataToDelete = { deletedId: req.body.user.id, deletedBy: req.body.user.name }
         const existing = await findOne(OfferSchema, { _id: id });
         if (!existing) return res.notFound({ message: "Offer data not found" });
         if (existing.isActive === true) return res.failure({ message: "Please inActive offer, before delete" });
 
         existing.isDeleted = true;
-        existing.deletedId = deleteToData.deletedId;
-        existing.deletedBy = deleteToData.deletedBy;
+        existing.deletedId = dataToDelete.deletedId;
+        existing.deletedBy = dataToDelete.deletedBy;
 
         const result = await updateOne(OfferSchema, { _id: id }, existing)
         return res.success({ data: result })
