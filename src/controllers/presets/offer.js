@@ -11,8 +11,7 @@ export async function addOfferDetails(req, res) {
         if (error) { return res.validationError({ message: error.message }); }
 
         const existing = await findOne(OfferSchema, { $and: [{ offerName: addToData.offerName }, { isDeleted: false }] });
-        // const maxId = await OfferSchema.findOne().sort('-offerId').select('offerId');
-        const maxId = await findMaxValue(OfferSchema, {}, { sort: { offerId: -1 } });
+        const maxId = await findMaxValue(OfferSchema, {}, {}, { sort: { offerId: -1 } });
         let newOfferId = 1;
         if (maxId[0]?.offerId) { newOfferId = maxId[0].offerId + 1; }
         addToData.offerId = newOfferId;
@@ -30,11 +29,11 @@ export async function addOfferDetails(req, res) {
 
 export async function getAllOffers(req, res) {
     try {
-        const result = await populate(OfferSchema, { isDeleted: false }, "portal network offer affiliate");
+        const result = await populate(OfferSchema, { isDeleted: false}, {}, "portal network offer affiliate");
         const data = result.map(item => ({
             _id: item._id,
-            offerId: item.offer.network_offer_id,
-            offerName: item.offer.name,
+            offerId: item.offerId,
+            offerName: item.offerName,
             portalName: item.portal.portalName,
             networkId: item.network.network_advertiser_id,
             networkName: item.network.name,
@@ -69,7 +68,7 @@ export async function getAllOffers(req, res) {
             { fieldName: "Affiliate Name", field: "affiliateName", filter: true },
             { fieldName: "Offer Link", field: "offerLink", filter: true },
         ]
-        return res.success({ data: { headers, data }, message: "offer data get successfully" })
+        return res.success({ data: { headers, data } })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
@@ -81,7 +80,7 @@ export async function getOfferById(req, res) {
         const { id } = req.params;
         const result = await findOne(OfferSchema, { _id: id });
         if (!result) { return res.notFound({ message: "offer data not found" }) }
-        return res.success({ data: result, message: "offer data get successfully" })
+        return res.success({ data: result })
     } catch (error) {
         console.error(error);
         return res.internalServerError();
@@ -109,10 +108,13 @@ export async function updateOfferDetails(req, res) {
 export async function activeInactiveOfferDetails(req, res) {
     try {
         const { id } = req.params;
+        const updateToData = { ...req.body.data, ...{ updatedId: req.body.user.id, updatedBy: req.body.user.name } };
         const existing = await findOne(OfferSchema, { _id: id });
         if (!existing) return res.notFound({ message: "offer data not found" });
 
         existing.isActive === true ? existing.isActive = false : existing.isActive = true;
+        existing.updatedId = updateToData.updatedId;
+        existing.updatedBy = updateToData.updatedBy;
 
         const result = await updateOne(OfferSchema, { _id: id }, existing)
         return res.success({ data: result })
