@@ -19,6 +19,7 @@ const network = new Schema({
     updatedAt: Date,
     updatedId: Number,
     updatedBy: String,
+    deletedAt:Date,
     deletedId: Number,
     deletedBy: String,
     isActive: { type: Boolean, default: true },
@@ -44,7 +45,11 @@ const network = new Schema({
     // network_advertiser_id:,
 
 }, {
-    timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
+    timestamps: {
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt',
+        deletedAt: 'deletedAt'
+    }
 });
 
 network.pre('save', async (next) => { next(); });

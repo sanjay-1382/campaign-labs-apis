@@ -11,6 +11,7 @@ const commonSchema = joi.object({
     isDeleted: joi.boolean().required().error(new Error("Is Deleted must be an boolean and it is required")),
 })
 
+
 const validator = (data, schema) => { return schema.validate(data) }
 
 export const addNetworkValidation = (data) => validator(data, commonSchema);

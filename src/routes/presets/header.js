@@ -5,8 +5,8 @@ import {
     addHeaderkDetails,
     getAllHeaderkDetails,
     updateHeaderkDetails,
-    activeInactiveHeaders,
-    deleteHeaders
+    activeInactiveHeadersDetails,
+    deleteHeadersDetails
 } from "../../controllers/presets/header";
 
 // Error handling middleware
@@ -19,7 +19,7 @@ router.use((err, req, res, next) => {
 router.route("/preset/header/create").post(addHeaderkDetails);
 router.route("/preset/header/details").get(getAllHeaderkDetails);
 router.route("/preset/header/update/:id").put(updateHeaderkDetails);
-router.route("/preset/header/active-inactive/:id").put(activeInactiveHeaders);
-router.route("/preset/header/delete/:id").delete(deleteHeaders);
+router.route("/preset/header/active-inactive/:id").put(activeInactiveHeadersDetails);
+router.route("/preset/header/delete/:id").delete(deleteHeadersDetails);
 
 export default router;

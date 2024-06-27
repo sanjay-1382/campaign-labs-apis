@@ -1,22 +1,21 @@
 
 import HeaderSchema from '../../models/presets/header'
 import { create, findMany, findOne, updateOne } from '../../services/db/mongo-db-definition'
-import { addHeaderValidation ,updateHeaderValidation} from '../../utils/validations/joi/presets/header';
-import { getDateAsDDMMMYYYY } from '../../utils/utility';
+import { addHeaderValidation, updateHeaderValidation } from '../../utils/validations/joi/presets/header';
+import moment from 'moment';
 
 export const addHeaderkDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
-        const dataToCreate = { ...data, createdId: user.id, createdBy: user.name }
+        const dataToCreate = { ...data, createdId: user.id, createdBy: user.name };
         const { error } = addHeaderValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
-        const found = await findOne(HeaderSchema, { $and: [{ headerName: dataToCreate.headerName }, { isDeleted: 'false' }] });
-        if (found) {
+        if (error) { return res.validationError({ message: error.message }) };
+        const existing = await findOne(HeaderSchema, { $and: [{ headerName: dataToCreate.headerName }, { isDeleted: 'false' }] });
+        if (existing) {
             return res.found({ message: "Header Name already exist" });
         }
         const result = await create(HeaderSchema, dataToCreate);
         res.success({ data: result });
-
     } catch (error) {
         console.log(error);
         return res.internalServerError();
@@ -25,11 +24,21 @@ export const addHeaderkDetails = async (req, res) => {
 
 export const getAllHeaderkDetails = async (req, res) => {
     try {
-        const result = await findMany(HeaderSchema, { isDeleted: false }, { sort: { createdAt: -1 } });
+        const result = await findMany(HeaderSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
         const data = result.map((item) => ({
-            ...item._doc,
-            createdAt: getDateAsDDMMMYYYY(item.createdAt),
-            updatedAt: getDateAsDDMMMYYYY(item.updatedAt)
+            headerName: item.headerName,
+            headerMessage: item.headerMessage,
+            associtedId: item.associtedId,
+            createdId: item.createdId,
+            createdBy: item.createdBy,
+            createdAt: moment.utc(item.createdAt).format('DD MMMM YYYY, HH:mm:ss'),
+            updatedId: item.updatedId,
+            updatedBy: item.updatedBy,
+            updatedAt: moment.utc(item.updatedAt).format('DD MMMM YYYY, HH:mm:ss'),
+            deletedId: item.deletedId,
+            deletedBy: item.deletedBy,
+            isActive: item.isActive,
+            isDeleted: item.isDeleted,
         }))
         const header = [
             { headerName: "Header Name", field: "headerName", filter: true, },
@@ -37,6 +46,7 @@ export const getAllHeaderkDetails = async (req, res) => {
             { headerName: "Associted Id", field: "associtedId", filter: true },
             { headerName: "Created By", field: "createdBy", filter: true },
             { headerName: "Updated By", field: "updatedBy", filter: true },
+            { headerName: "Deleted By", field: "deletedBy", filter: true },
             { headerName: "Is Active", field: "isActive", filter: true },
             { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
@@ -51,49 +61,45 @@ export const getAllHeaderkDetails = async (req, res) => {
 
 export const updateHeaderkDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
-        const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name }
+        const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name };
         const { error } = updateHeaderValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
-        const found = await findOne(HeaderSchema, { $and: [{ headerName: dataToUpdate.headerName }, { isDeleted: 'false' }] });
-        if (found) {
+        if (error) { return res.validationError({ message: error.message }) };
+        const existing = await findOne(HeaderSchema, { $and: [{ headerName: dataToUpdate.headerName }, { isDeleted: 'false' }] });
+        if (existing) {
             return res.found({ message: "Header Name already exist" });
         }
-        const result = await updateOne(HeaderSchema, { '_id': id }, { '$set': dataToUpdate });
+        const result = await updateOne(HeaderSchema, query, dataToUpdate);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
-        return res.internalServerError()
+        return res.internalServerError();
     }
 }
 
-export const activeInactiveHeaders = async (req, res) => {
+export const activeInactiveHeadersDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
-        const dataToactiveInactive = { ...data,  updatedId: user.id, updatedBy: user.name };
-        const { error } = updateHeaderValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
-        const result = await updateOne(HeaderSchema, { '_id': id }, { '$set': dataToactiveInactive });
+        const dataToactiveInactive = { ...data, updatedId: user.id, updatedBy: user.name };
+        const result = await updateOne(HeaderSchema, query, dataToactiveInactive);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
-        return res.internalServerError()
+        return res.internalServerError();
     }
 }
 
-export const deleteHeaders = async (req, res) => {
+export const deleteHeadersDetails = async (req, res) => {
     try {
-        const id = req.params.id;
+        const query = { _id: req.params.id };
         const { data, user } = req.body;
-        const dataToactiveInactive = { ...data,  deletedId: user.id, deletedBy: user.name };
-        const { error } = updateHeaderValidation(data);
-        if (error) { return res.validationError({ message: error.message }); }
-        const result = await updateOne(HeaderSchema, { '_id': id }, { '$set': dataToactiveInactive });
+        const dataToactiveInactive = { ...data, deletedId: user.id, deletedBy: user.name };
+        const result = await updateOne(HeaderSchema, query, dataToactiveInactive);
         res.success({ data: result });
     } catch (error) {
         console.log(error);
-        return res.internalServerError()
+        return res.internalServerError();
     }
 }
