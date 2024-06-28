@@ -49,7 +49,7 @@ export const getAllFooterDetails = async (req, res) => {
             { headerName: "Is Deleted", field: "isDeleted", filter: true },
             { headerName: "Created At", field: "createdAt", filter: true },
             { headerName: "Updated At", field: "updatedAt", filter: true },
-        ]
+        ];
         res.success({ data: { data, header } });
     } catch (error) {
         console.log(error);
