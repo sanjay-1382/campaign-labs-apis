@@ -141,7 +141,7 @@ export const softDeleteTemplateDetails = async (req, res) => {
 
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "Template data not found" });
-        if (existing.isActive === true) return res.failure({ message: "Please in-active template, before delete" });
+        if (existing.isActive === true) return res.badRequest({ message: "Please in-active template, before delete" });
 
         existing.isDeleted = true;
         existing.deletedId = dataToDelete.deletedId;

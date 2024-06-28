@@ -107,8 +107,8 @@ export const updatePoolDetails = async (req, res) => {
 export const activeInactivePoolDetails = async (req, res) => {
     try {
         const query = { _id: req.params.id };
-        const { isActive } = req.body.data;
-        const updateBody = { isActive };
+        const { data, user } = req.body;
+        const updateBody = { ...data, updatedId: user.id, updatedBy: user.name };
         const result = await updateOne(PoolSchema, query, updateBody);
         if (!result) { return res.notFound({ message: "No data found" }); }
         return res.success({ data: result });
@@ -120,9 +120,13 @@ export const activeInactivePoolDetails = async (req, res) => {
 
 export const softDeletePoolDetails = async (req, res) => {
     try {
+
         const { id, name } = req.body.user;
         const query = { _id: req.params.id };
         const updateBody = { deletedId: id, deletedBy: name, isActive: false, isDeleted: true };
+        const existing = await findOne(PoolSchema, query);
+        if (!existing) return res.notFound({ message: "Pool data not found" });
+        if (existing.isActive === true) return res.badRequest({ message: "Please in-active pool, before delete" });
         const result = await updateOne(PoolSchema, query, updateBody);
         return res.success({ data: result });
     } catch (error) {
@@ -130,14 +134,14 @@ export const softDeletePoolDetails = async (req, res) => {
     }
 }
 
-export const deletePoolDetails = async (req, res) => {
-    try {
-        const query = { _id: req.params.id };
-        const result = await deleteOne(PoolSchema, query);
-        if (!result) { return res.notFound({ message: "No data found" }); }
-        return res.success({ data: result });
-    }
-    catch (error) {
-        return res.internalServerError({ message: error.message });
-    }
-}
+// export const deletePoolDetails = async (req, res) => {
+//     try {
+//         const query = { _id: req.params.id };
+//         const result = await deleteOne(PoolSchema, query);
+//         if (!result) { return res.notFound({ message: "No data found" }); }
+//         return res.success({ data: result });
+//     }
+//     catch (error) {
+//         return res.internalServerError({ message: error.message });
+//     }
+// }
