@@ -63,7 +63,7 @@ export const getAllTemplates = async (req, res) => {
             { fieldName: "Status", field: "isActive", filter: true },
         ];
 
-        return res.success({ data: { headers, data } });
+        return res.success({ data: { data, headers } });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
