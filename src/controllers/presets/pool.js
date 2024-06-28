@@ -91,8 +91,6 @@ export const updatePoolDetails = async (req, res) => {
     try {
         const { data, user } = req.body;
         const dataToUpdate = { ...data, updatedId: user.id, updatedBy: user.name };
-        // const { error } = editPoolDetailsValidator(dataToUpdate);
-        // if (error) { return res.validationError({ message: error.message }); }
         const query = { _id: req.params.id };
         const existing = await findOne(PoolSchema, { name: dataToUpdate.name });
         if (existing && dataToUpdate.name !== data.name) { return res.found({ message: `Pool ${existing.name} name already exists. Please choose a different name.` }); }
@@ -109,8 +107,8 @@ export const updatePoolDetails = async (req, res) => {
 export const activeInactivePoolDetails = async (req, res) => {
     try {
         const query = { _id: req.params.id };
-        const { isActive, remark } = req.body.data;
-        const updateBody = { isActive, remark };
+        const { isActive } = req.body.data;
+        const updateBody = { isActive };
         const result = await updateOne(PoolSchema, query, updateBody);
         if (!result) { return res.notFound({ message: "No data found" }); }
         return res.success({ data: result });
