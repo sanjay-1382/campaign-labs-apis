@@ -12,7 +12,7 @@ import pool from './presets/pool';
 import everflow from './portal-platform/everflow';
 import template from './presets/template';
 import portal from './portal-platform/portal';
-import ipHistoricalData from './domainIpHistoricalData/ipHistoricalData'
+import ipHistoricalData from './domain-ip-historical-data/ip-historical-data/ip-historical-data'
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });

@@ -2,14 +2,13 @@ import { Router } from "express";
 import multer from "multer";
 
 const router = Router();
-
 const upload = multer({ dest: "volume/uploads/csv" });
 
 import {
     addDomainIpDetails,
     getDomainIpDetails,
     updateDomainIpDetails
-} from "../../controllers/domainIpHistoricalData/ipHistoricalData";
+} from "../../../controllers/domain-ip-historical-data/ip-historical-data/ip-historical-data";
 
 // Error handling middleware
 router.use((err, req, res, next) => {

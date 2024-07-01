@@ -1,8 +1,8 @@
-import IpHistoricalSchema from "../../models/domainIpHistoricalData/ipHistoricalData.js";
+import IpHistoricalSchema from "../../../models/domain-ip-historical-data/ip-historical-data/ip-historical-data.js";
 import fs from "fs";
 import csvParser from "csv-parser";
-import { randomString, validateIPAddress } from "../../utils/utility.js";
-import { insertMany, findMany, updateMany } from "../../services/db/mongo-db-definition.js";
+import { randomString, validateIPAddress } from "../../../utils/utility.js";
+import { insertMany, findMany, updateMany } from "../../../services/db/mongo-db-definition.js";
 import moment from 'moment';
 
 export const addDomainIpDetails = async (req, res) => {
@@ -117,16 +117,14 @@ export const getDomainIpDetails = (req, res) => {
 };
 
 export const updateDomainIpDetails = async (req, res) => {
-    const {data , user} = req.body
+    const { data, user } = req.body
     const query = data.editMode === "forthis" ? { _id: req.params.id } : { refId: data.refId };
-    console.log(query);
     const dataToUpdate = { expiryDate: data.expiryDate, updatedId: user.id, updatedBy: user.name };
     try {
         const result = await updateMany(IpHistoricalSchema, query, dataToUpdate);
-            res.success({data:result})
+        res.success({ data: result })
     } catch (error) {
         console.error("Error updating IP data:", error);
         res.internalServerError();
     }
 };
-
