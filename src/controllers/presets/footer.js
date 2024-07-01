@@ -21,7 +21,7 @@ export const addFooterDetails = async (req, res) => {
 
 export const getAllFooterDetails = async (req, res) => {
     try {
-        const result = await findMany(FooterSchema, { isDeleted: false }, {}, { sort: { createdAt: -1 } });
+        const result = await findMany(FooterSchema, {}, {}, { sort: { createdAt: -1 } });
         const data = result.map((item) => ({
             _id: item._id,
             footerName: item.footerName,

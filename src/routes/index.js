@@ -12,6 +12,7 @@ import pool from './presets/pool';
 import everflow from './portal-platform/everflow';
 import template from './presets/template';
 import portal from './portal-platform/portal';
+import ipHistoricalData from './domainIpHistoricalData/ipHistoricalData'
 
 router.get('/', (req, res, next) => {
     res.render('index', { title: 'CampaignLabs' });
@@ -27,7 +28,8 @@ const routes = [
     footer,
     everflow,
     template,
-    portal
+    portal,
+    ipHistoricalData
 ];
 
 // Use forEach to apply routes
