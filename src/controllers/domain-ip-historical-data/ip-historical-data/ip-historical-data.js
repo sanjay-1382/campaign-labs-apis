@@ -119,7 +119,6 @@ export const getDomainIpDetails = (req, res) => {
 export const updateDomainIpDetails = async (req, res) => {
     const { data, user } = req.body
     const query = data.editMode === "forthis" ? { _id: req.params.id } : { refId: data.refId };
-    // console.log(query);
     const dataToUpdate = { expiryDate: data.expiryDate, updatedId: user.id, updatedBy: user.name };
     try {
         const result = await updateMany(IpHistoricalSchema, query, dataToUpdate);
