@@ -2,8 +2,10 @@ import { Schema, model } from "mongoose";
 
 const poolSchema = Schema(
     {
+        associtedId: Number,
         poolName: { type: String, default: false, required: true },
         poolType: { type: String, default: false, required: true },
+        poolValue: Object,
         subjectLines: { type: Object, subjects: { type: Array, default: [], required: true } },
         templates: { type: Object, template: { type: Array, default: [] } },
         esps: { type: Object, esp: { type: Array, default: [] } },
@@ -23,7 +25,6 @@ const poolSchema = Schema(
         deletedBy: String,
         isDeleted: { type: Boolean, default: false },
         isActive: { type: Boolean, default: true },
-
     }, {
     timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' }
 });

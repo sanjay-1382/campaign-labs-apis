@@ -57,13 +57,13 @@ export const getAllTemplates = async (req, res) => {
             { fieldName: "Template Html", field: "templateHtml", filter: true },
             { fieldName: "Template Text", field: "templateText", filter: true },
             { fieldName: "Template Type", field: "templateType", filter: true },
-            { fieldName: "createdBy", field: "createdBy", filter: true },
-            { fieldName: "updatedBy", field: "updatedBy", filter: true },
-            { fieldName: "deletedBy", field: "deletedBy", filter: true },
-            { fieldName: "status", field: "isActive", filter: true },
-        ]
+            { fieldName: "Created By", field: "createdBy", filter: true },
+            { fieldName: "Updated By", field: "updatedBy", filter: true },
+            { fieldName: "Deleted By", field: "deletedBy", filter: true },
+            { fieldName: "Status", field: "isActive", filter: true },
+        ];
 
-        return res.success({ data: { headers, data } });
+        return res.success({ data: { data, headers } });
     } catch (error) {
         console.error(error);
         return res.internalServerError()
@@ -141,7 +141,7 @@ export const softDeleteTemplateDetails = async (req, res) => {
 
         const existing = await findOne(TemplateSchema, { _id: id });
         if (!existing) return res.notFound({ message: "Template data not found" });
-        if (existing.isActive === true) return res.failure({ message: "Please in-active template, before delete" });
+        if (existing.isActive === true) return res.badRequest({ message: "Please in-active template, before delete" });
 
         existing.isDeleted = true;
         existing.deletedId = dataToDelete.deletedId;
