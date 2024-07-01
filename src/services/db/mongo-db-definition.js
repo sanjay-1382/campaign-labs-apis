@@ -5,7 +5,7 @@ export const create = (model, data) => {
         .catch(error => { throw error; });
 }
 
-//InsertMany save multiple object at a single time
+// Insert many document at a single time
 export const insertMany = (model, data) => {
     return model.insertMany(data)
         .then(result => { return result; })
@@ -33,14 +33,14 @@ export const findMany = (model, filter = {}, options = {}, sortValue = {}) => {
         .catch(error => { throw error; });
 }
 
-// find multiple documents
+// Find multiple documents
 export const findWithLimit = (model, filter = {}, options = {}, limit = 0) => {
     return model.find(filter, options).limit(limit)
         .then(result => { return result; })
         .catch(error => { throw error; });
 }
 
-// find multiple documents
+// Find multiple documents
 export const findMaxValue = (model, filter = {}, options = {}, sortValue = {}) => {
     return model.find(filter, options, sortValue).limit(1)
         .then(result => { return result; })
@@ -89,7 +89,7 @@ export const populate = (model, filter = {}, options = {}, aggregateKey = {}, so
         .catch(error => { throw error; });
 }
 
-// find documents with pagination
+// Find documents with pagination
 export const paginate = (model, filter = {}, options = {}) => {
     return model.paginate(filter, options)
         .then(result => { return result; })

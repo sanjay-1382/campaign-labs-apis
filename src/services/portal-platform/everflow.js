@@ -4,6 +4,7 @@ import axios from "axios";
 import EverFlowAdvertiserDetails from "../../models/portal-platform/everflow/advertisers";
 import EverFlowAffiliatesDetails from "../../models/portal-platform/everflow/affiliates";
 import EverFlowOfferDetails from "../../models/portal-platform/everflow/offers";
+import { insertMany } from '../db/mongo-db-definition';
 
 const axiosInstance = axios.create({
     baseURL: "https://api.eflow.team/v1/networks",
@@ -20,7 +21,7 @@ async function fetchAndStoreData(endpoint, pageSize, modelSchema) {
             const response = await axiosInstance.get(`/${endpoint}?page_size=${pageSize}&page=${page}`);
             const data = response.data[endpoint];
             if (!data || data.length === 0) { hasMoreData = false; continue; }
-            if (data.length > 0) { await modelSchema.insertMany(data); }
+            if (data.length > 0) { await insertMany(modelSchema, data); }
             hasMoreData = data.length === pageSize;
             page += 1;
         } catch (error) {
