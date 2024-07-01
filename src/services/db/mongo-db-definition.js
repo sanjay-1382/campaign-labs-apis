@@ -5,6 +5,13 @@ export const create = (model, data) => {
         .catch(error => { throw error; });
 }
 
+//InsertMany save multiple object at a single time
+export const insertMany = (model, data) => {
+    return model.insertMany(data)
+        .then(result => { return result; })
+        .catch(error => { throw error; });
+}
+
 // Count documents
 export const count = (model, filter = {}) => {
     return model.countDocuments(filter)
