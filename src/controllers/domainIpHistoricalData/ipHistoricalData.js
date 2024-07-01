@@ -9,14 +9,10 @@ export const addDomainIpDetails = async (req, res) => {
     const { data, user } = req.body;
     const dataToCreate = { ...data, createdId: user.id, createdBy: user.name }
     dataToCreate.refId = randomString(10);
-
     let newIp = [];
-
     if (dataToCreate.ipAddress) {
-        console.log(dataToCreate.ipAddress);
         // let newipAddress = dataToCreate?.ipAddress.length == 1 ? dataToCreate?.ipAddress : JSON.parse(dataToCreate?.ipAddress);
         let newipAddress = dataToCreate?.ipAddress;
-        console.log(newipAddress + "newipAddress");
         // Check if 'ip_add' exists in the request body 
         if (newipAddress) {
             newipAddress.map((ip) => {
